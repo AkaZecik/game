@@ -95,6 +95,7 @@ public class GameScreen implements Screen {
         mouse = new GameObject(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f, 90, 0f);
 
         cheeseDrawing = new GameObjectDrawing(75, 75, Gdx.files.internal("cheese.png"));
+
         catDrawing = new GameObjectDrawing(116, 40, Gdx.files.internal("cat.png"));
         cat = new GameObject(-200, -200, 0, 100f);
 
@@ -135,13 +136,10 @@ public class GameScreen implements Screen {
     }
 
     private void spawnCheese() {
-        if (cheese != null) {
-            return;
-        }
-
         float x = MathUtils.random(1024f);
         float y = MathUtils.random(768f);
         cheese = new GameObject(x, y, 0, 0);
+        cheeseDrawing.transform(cheese);
     }
 
     private void processInput() {
@@ -165,8 +163,31 @@ public class GameScreen implements Screen {
             trap.move(delta);
         }
 
+        cat.angle = MathUtils.atan2(mouse.y - cat.y, mouse.x - cat.x);
         cat.move(delta);
+        System.out.println("Cat: " + cat.x + ", " + cat.y + "; angle: " + cat.angle);
         mouse.move(delta);
+
+        if (mouseDrawing.overlap(cheeseDrawing)) {
+            ++score;
+            System.out.println("SCORE!!!");
+
+            do {
+                spawnCheese();
+            } while (mouseDrawing.overlap(cheeseDrawing));
+        }
+
+        if (mouseDrawing.overlap(catDrawing)) {
+            System.out.println("LOOSER");
+        }
+
+        for (GameObject trap : traps) {
+            trapDrawing.transform(trap);
+
+            if (mouseDrawing.overlap(trapDrawing)) {
+                System.out.println("CAUGHT!");
+            }
+        }
     }
 
     @Override
@@ -195,7 +216,6 @@ public class GameScreen implements Screen {
             game.batch.end();
         } else {
             processInput();
-            spawnCheese();
             progressWorld(delta);
 
             for (GameObject trap : traps) {
@@ -203,7 +223,7 @@ public class GameScreen implements Screen {
                 trapDrawing.draw(game.batch);
             }
 
-            cheeseDrawing.transform(cheese);
+            catDrawing.draw(game.batch);
             cheeseDrawing.draw(game.batch);
             game.batch.end();
 
@@ -240,7 +260,7 @@ public class GameScreen implements Screen {
         hudFont.dispose();
         chaseMusic.dispose();
         mouseDrawing.dispose();
-//        catDrawing.dispose();
+        catDrawing.dispose();
         trapDrawing.dispose();
     }
 
@@ -302,7 +322,6 @@ public class GameScreen implements Screen {
         }
 
         void transform(GameObject gameObject) {
-            System.out.println(gameObject.angle);
             setPosition(gameObject.x, gameObject.y);
             setRotation(gameObject.angle);
         }
