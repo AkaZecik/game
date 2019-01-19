@@ -99,6 +99,10 @@ public class GameScreen implements Screen {
         catDrawing = new GameObjectDrawing(116, 40, Gdx.files.internal("cat.png"));
         cat = new GameObject(-200, -200, 0, 100f);
 
+        do {
+            spawnCheese();
+        } while (mouseDrawing.overlap(cheeseDrawing));
+
         trapDrawing = new GameObjectDrawing(73, 40, Gdx.files.internal("trap.png"));
         traps = new Array<>();
 
@@ -165,16 +169,11 @@ public class GameScreen implements Screen {
 
         cat.angle = MathUtils.atan2(mouse.y - cat.y, mouse.x - cat.x);
         cat.move(delta);
-        System.out.println("Cat: " + cat.x + ", " + cat.y + "; angle: " + cat.angle);
         mouse.move(delta);
 
         if (mouseDrawing.overlap(cheeseDrawing)) {
             ++score;
             System.out.println("SCORE!!!");
-
-            do {
-                spawnCheese();
-            } while (mouseDrawing.overlap(cheeseDrawing));
         }
 
         if (mouseDrawing.overlap(catDrawing)) {
@@ -207,8 +206,7 @@ public class GameScreen implements Screen {
         game.batch.begin();
         game.batch.draw(backgroundTexture, 0, 0);
 
-        mouseDrawing.transform(mouse);
-        mouseDrawing.draw(game.batch);
+        mouseDrawing.draw(game.batch, mouse);
 
         if (time < 4) {
             countDownFont.draw(game.batch, Integer.toString(MathUtils.ceil(4f - time)),
@@ -219,12 +217,11 @@ public class GameScreen implements Screen {
             progressWorld(delta);
 
             for (GameObject trap : traps) {
-                trapDrawing.transform(trap);
-                trapDrawing.draw(game.batch);
+                trapDrawing.draw(game.batch, trap);
             }
 
-            catDrawing.draw(game.batch);
-            cheeseDrawing.draw(game.batch);
+            catDrawing.draw(game.batch, cat);
+            cheeseDrawing.draw(game.batch, cheese);
             game.batch.end();
 
             scoreLabel.setText("Score " + score + "/" + max_score);
@@ -309,7 +306,8 @@ public class GameScreen implements Screen {
             sprite.setPosition(x - width / 2f, y - height / 2f);
         }
 
-        void draw(PolygonSpriteBatch batch) {
+        void draw(PolygonSpriteBatch batch, GameObject gameObject) {
+            transform(gameObject);
             sprite.draw(batch);
         }
 
