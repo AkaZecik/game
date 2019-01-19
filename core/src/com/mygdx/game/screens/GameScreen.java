@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -26,26 +27,28 @@ public class GameScreen implements Screen {
     private int total;
     private Music chaseMusic;
     private FreeTypeFontGenerator fontGenerator;
-    private BitmapFont font;
+    private BitmapFont hudFont;
+    private BitmapFont countDownFont;
     private Label scoreLabel;
     private Label timeLabel;
 
     GameScreen(final TheGame game) {
         this.game = game;
         viewport = new ScreenViewport();
+        hud = new Stage(viewport, this.game.batch);
         this.game.batch.setProjectionMatrix(viewport.getCamera().combined);
+        hud.setDebugAll(true);
 
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-MediumItalic.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 24;
         parameter.color = Color.RED;
-        font = fontGenerator.generateFont(parameter);
-
-        hud = new Stage(viewport, this.game.batch);
-        hud.setDebugAll(true);
+        hudFont = fontGenerator.generateFont(parameter);
+        parameter.size = 60;
+        countDownFont = fontGenerator.generateFont(parameter);
 
         Label.LabelStyle style = new Label.LabelStyle();
-        style.font = font;
+        style.font = hudFont;
         scoreLabel = new Label("ABC", style);
         timeLabel = new Label("DEF", style);
         Container<Label> scoreLabelContainer = new Container<>(scoreLabel).top().right().pad(30);
@@ -76,12 +79,19 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(1f, 0.8f, 1f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        float time = (TimeUtils.nanoTime() - start) / 1_000_000_000f;
 
-        scoreLabel.setText("Score " + score + "/" + total);
-        timeLabel.setText("Time: " + new DecimalFormat("#0.0")
-                .format((TimeUtils.nanoTime() - start) / 1_000_000_000f));
-        hud.act();
-        hud.draw();
+        if (time < 4) {
+            game.batch.begin();
+            countDownFont.draw(game.batch, Integer.toString(MathUtils.ceil(4f - time)), 20, 100);
+            game.batch.end();
+        } else {
+            scoreLabel.setText("Score " + score + "/" + total);
+            timeLabel.setText("Time: " + new DecimalFormat("#0.0").format(time - 4f));
+            hud.act();
+            hud.draw();
+        }
+
     }
 
     @Override
@@ -107,7 +117,7 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         fontGenerator.dispose();
-        font.dispose();
+        hudFont.dispose();
         chaseMusic.dispose();
     }
 }
