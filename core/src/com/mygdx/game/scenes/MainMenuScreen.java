@@ -8,9 +8,11 @@ import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.TheGame;
 
@@ -19,7 +21,6 @@ public class MainMenuScreen implements Screen {
     private Texture backgroundTexture;
     private Music music;
     private Stage stage;
-    private Table table;
     private BitmapFont font;
     private FreeTypeFontGenerator fontGenerator;
 
@@ -31,7 +32,7 @@ public class MainMenuScreen implements Screen {
 
         backgroundTexture = new Texture(Gdx.files.internal("tom-and-jerry.jpg"));
 
-        table = new Table();
+        final Table table = new Table();
         table.setFillParent(true);
         table.setDebug(true);
         stage.addActor(table);
@@ -54,6 +55,16 @@ public class MainMenuScreen implements Screen {
         table.add(startButton);
 
         final TextButton exitButton = new TextButton("Exit", style);
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (exitButton.isPressed()) {
+                    dispose();
+                    Gdx.app.exit();
+                }
+            }
+        });
+
         table.add(exitButton);
 
         music = Gdx.audio.newMusic(Gdx.files.internal("menu.mp3"));
@@ -98,6 +109,9 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
+        fontGenerator.dispose();
+        font.dispose();
+        backgroundTexture.dispose();
         music.dispose();
         stage.dispose();
     }
