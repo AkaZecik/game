@@ -7,10 +7,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.PolygonRegion;
-import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
@@ -18,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.TheGame;
@@ -39,7 +35,6 @@ public class GameScreen implements Screen {
     private Label scoreLabel;
     private Label timeLabel;
     private Trap trap;
-    private Array<Trap> traps;
 
     GameScreen(final TheGame game) {
         this.game = game;
@@ -106,10 +101,14 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(1f, 0.8f, 1f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         float time = (TimeUtils.nanoTime() - start) / 1_000_000_000f;
+        game.batch.setProjectionMatrix(viewport.getCamera().combined);
+
+        game.batch.begin();
+        trap.draw(game.batch);
+        game.batch.end();
 
         if (time < 4) {
             game.batch.begin();
-            trap.draw(game.batch);
             countDownFont.draw(game.batch, Integer.toString(MathUtils.ceil(4f - time)),
                     viewport.getScreenWidth() / 2f - 50, viewport.getScreenHeight() / 2f + 60);
             game.batch.end();
@@ -158,41 +157,70 @@ public class GameScreen implements Screen {
         private final Polygon polygon;
         private final Texture trapTexture;
         private final PolygonRegion region;
+        private final PolygonSprite sprite;
+        private final float width;
+        private final float height;
+        private float rotation;
         private float x;
         private float y;
 
         Trap(float width, float height, FileHandle fileHandle) {
+            this.width = width;
+            this.height = height;
             float[] vertices = new float[]{0, 0, width, 0, width, height, 0, height};
             polygon = new Polygon(vertices);
             polygon.setOrigin(width / 2f, height / 2f);
+            polygon.setPosition(0, 0);
             trapTexture = new Texture(fileHandle);
-            region = new PolygonRegion(new TextureRegion(trapTexture), vertices, new short[]{0, 1, 2, 0, 3, 2});
-            x = 0;
-            y = 0;
+            float textureWidth = trapTexture.getWidth();
+            float textureHeight = trapTexture.getHeight();
+            region = new PolygonRegion(new TextureRegion(trapTexture),
+                    new float[]{0, 0, textureWidth, 0, textureWidth, textureHeight, 0, textureHeight},
+                    new short[]{0, 1, 2, 0, 3, 2});
+            sprite = new PolygonSprite(region);
+
+            for (float v : sprite.getVertices()) {
+                System.out.print(v);
+                System.out.print(" ");
+            }
+
+            sprite.setSize(width, height);
+            sprite.setOrigin(width / 2f, height / 2f);
+            setPosition(0, 0);
         }
 
         void rotate(float angle) {
+            rotation = angle;
+            sprite.getRotation();
+            sprite.setRotation(-sprite.getRotation());
+            sprite.rotate(angle);
             polygon.rotate(angle);
         }
 
-        public float getX() {
+        float getX() {
             return x;
         }
 
-        public float getY() {
+        float getY() {
             return y;
+        }
+
+        float getRotation() {
+            return rotation;
         }
 
         void setPosition(float x, float y) {
             this.x = x;
             this.y = y;
+            polygon.setPosition(x, y);
+            sprite.setPosition(x - width / 2f, y - height / 2f);
         }
 
-        public void draw(PolygonSpriteBatch batch) {
-            batch.draw(region, x, y);
+        void draw(PolygonSpriteBatch batch) {
+            sprite.draw(batch);
         }
 
-        public void dispose() {
+        void dispose() {
             trapTexture.dispose();
         }
     }
