@@ -157,7 +157,7 @@ public class GameScreen implements Screen {
         if (-1 <= deltaX && deltaX <= 1 && -1 <= deltaY && deltaY <= 1) {
             mouse.speed = 0;
         } else {
-            mouse.speed = 150f;
+            mouse.speed = 200f;
             mouse.angle = MathUtils.atan2(cursorY - mouseY, cursorX - mouseX);
         }
     }
@@ -173,18 +173,38 @@ public class GameScreen implements Screen {
 
         if (mouseDrawing.overlap(cheeseDrawing)) {
             ++score;
-            System.out.println("SCORE!!!");
+
+            if (score == max_score) {
+                Gdx.app.postRunnable(() -> {
+                    dispose();
+                    game.setScreen(new WinScreen(game));
+                });
+            } else {
+                do {
+                    spawnCheese();
+                } while (mouseDrawing.overlap(cheeseDrawing));
+            }
         }
 
         if (mouseDrawing.overlap(catDrawing)) {
             System.out.println("LOOSER");
+
+            Gdx.app.postRunnable(() -> {
+                dispose();
+                game.setScreen(new GameOverScreen(game, score, max_score));
+            });
         }
 
         for (GameObject trap : traps) {
             trapDrawing.transform(trap);
 
             if (mouseDrawing.overlap(trapDrawing)) {
-                System.out.println("CAUGHT!");
+                System.out.println("TRAPPED!");
+
+                Gdx.app.postRunnable(() -> {
+                    dispose();
+                    game.setScreen(new GameOverScreen(game, score, max_score));
+                });
             }
         }
     }

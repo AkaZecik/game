@@ -20,7 +20,7 @@ public class GameOverScreen implements Screen {
     private final Stage stage;
     private final FreeTypeFontGenerator fontGenerator;
     private final BitmapFont font;
-    private final Sound catScream;
+    private final Sound gameOverSound;
 
     GameOverScreen(final TheGame game, int score, int max_score) {
         this.game = game;
@@ -76,12 +76,12 @@ public class GameOverScreen implements Screen {
         table.add(playAgainButon);
         table.add(menuButton);
 
-        catScream = Gdx.audio.newSound(Gdx.files.internal("cat_scream.wav"));
+        gameOverSound = Gdx.audio.newSound(Gdx.files.internal("game_over.mp3"));
     }
 
     @Override
     public void show() {
-        catScream.play();
+        gameOverSound.play();
     }
 
     @Override
@@ -114,7 +114,7 @@ public class GameOverScreen implements Screen {
     public void dispose() {
         font.dispose();
         fontGenerator.dispose();
-        catScream.dispose();
+        gameOverSound.dispose();
         stage.dispose();
     }
 }

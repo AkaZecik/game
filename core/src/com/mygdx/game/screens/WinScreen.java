@@ -22,7 +22,7 @@ public class WinScreen implements Screen {
     private final BitmapFont font;
     private final Sound catScream;
 
-    WinScreen(final TheGame game, int score, int max_score) {
+    WinScreen(final TheGame game) {
         this.game = game;
         stage = new Stage(new ScreenViewport(), game.batch);
         Gdx.input.setInputProcessor(stage);
