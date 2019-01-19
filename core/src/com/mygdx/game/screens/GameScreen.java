@@ -42,15 +42,19 @@ public class GameScreen implements Screen {
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-MediumItalic.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 24;
-        parameter.color = Color.RED;
+        parameter.color = Color.YELLOW;
+        parameter.borderWidth = 1;
+        parameter.borderColor = Color.BLACK;
         hudFont = fontGenerator.generateFont(parameter);
-        parameter.size = 60;
+        parameter.size = 120;
+        parameter.borderWidth = 2;
+        parameter.color = Color.WHITE;
         countDownFont = fontGenerator.generateFont(parameter);
 
         Label.LabelStyle style = new Label.LabelStyle();
         style.font = hudFont;
-        scoreLabel = new Label("ABC", style);
-        timeLabel = new Label("DEF", style);
+        scoreLabel = new Label("", style);
+        timeLabel = new Label("", style);
         Container<Label> scoreLabelContainer = new Container<>(scoreLabel).top().right().pad(30);
         Container<Label> timeLabelContainer = new Container<>(timeLabel).top().left().pad(30);
         scoreLabelContainer.setFillParent(true);
@@ -83,7 +87,8 @@ public class GameScreen implements Screen {
 
         if (time < 4) {
             game.batch.begin();
-            countDownFont.draw(game.batch, Integer.toString(MathUtils.ceil(4f - time)), 20, 100);
+            countDownFont.draw(game.batch, Integer.toString(MathUtils.ceil(4f - time)),
+                    viewport.getScreenWidth() / 2f - 50, viewport.getScreenHeight() / 2f + 60);
             game.batch.end();
         } else {
             scoreLabel.setText("Score " + score + "/" + total);
