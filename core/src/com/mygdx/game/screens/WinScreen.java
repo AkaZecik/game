@@ -15,14 +15,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.TheGame;
 
-public class GameOverScreen implements Screen {
+public class WinScreen implements Screen {
     private final TheGame game;
     private final Stage stage;
     private final FreeTypeFontGenerator fontGenerator;
     private final BitmapFont font;
     private final Sound catScream;
 
-    GameOverScreen(final TheGame game, int score, int max_score) {
+    WinScreen(final TheGame game, int score, int max_score) {
         this.game = game;
         stage = new Stage(new ScreenViewport(), game.batch);
         Gdx.input.setInputProcessor(stage);
@@ -41,12 +41,9 @@ public class GameOverScreen implements Screen {
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
-        Label gameOverLabel = new Label("Game Over!", labelStyle);
-        Label scoreLabel = new Label("Your score: " + score + "/" + max_score, labelStyle);
+        Label winLabel = new Label("You won!", labelStyle);
 
-        table.add(gameOverLabel).colspan(2);
-        table.row();
-        table.add(scoreLabel).colspan(2);
+        table.add(winLabel).colspan(2);
         table.row();
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
