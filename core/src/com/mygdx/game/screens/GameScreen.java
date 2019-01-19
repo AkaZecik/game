@@ -28,17 +28,20 @@ public class GameScreen implements Screen {
     private Stage hud;
     private long start;
     private int score;
-    private int total;
+    private int max_score;
+    private int max_traps;
     private Music chaseMusic;
     private FreeTypeFontGenerator fontGenerator;
     private BitmapFont hudFont;
     private BitmapFont countDownFont;
     private Label scoreLabel;
     private Label timeLabel;
-    private GameObject mouse;
-    private GameObject cat;
-    private GameObject trap;
-    private Array<TrapData> trapData;
+    private GameObjectDrawing mouseDrawing;
+    private GameObjectDrawing catDrawing;
+    private GameObjectDrawing trapDrawing;
+    private GameObject mouseData;
+    private GameObject catData;
+    private Array<GameObject> trapsData;
 
     GameScreen(final TheGame game) {
         this.game = game;
@@ -77,19 +80,65 @@ public class GameScreen implements Screen {
         chaseMusic = Gdx.audio.newMusic(Gdx.files.internal("chase.mp3"));
         chaseMusic.setLooping(true);
 
-        total = 10;
+        max_score = 10;
+        max_traps = 15;
 
-        mouse = new GameObject(75, 75, Gdx.files.internal("mouse.png"));
-        trap = new GameObject(40, 73, Gdx.files.internal("trap.png"));
+        mouseDrawing = new GameObjectDrawing(75, 75, Gdx.files.internal("mouse.png"));
+        mouseDrawing.setRotation(90f);
+        mouseData = new GameObject(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f, 90f, 1f);
+
+        trapDrawing = new GameObjectDrawing(73, 40, Gdx.files.internal("trap.png"));
+        trapsData = new Array<>();
+
+        for (int i = 0; i < 5; ++i) {
+            spawnRandomTrap();
+            System.out.println("Spawning");
+        }
     }
 
-    void spawnRandomTrap() {
+    private void spawnRandomTrap() {
         int edge = MathUtils.random(3);
-        float angle = MathUtils.random(180f);
-        GameObject trap = new GameObject(30, 55, Gdx.files.internal("trap.png"));
-        trap.rotate(angle + edge * 90f);
-        float x = MathUtils.random(1024f);
-        float y = MathUtils.random(768f);
+        float angle = MathUtils.random(MathUtils.PI) + edge * MathUtils.PI / 2;
+        float x = 0;
+        float y = 0;
+
+        switch (edge) {
+            case 0:
+                x = MathUtils.random(1024);
+                y = 0;
+                break;
+            case 1:
+                x = 1024;
+                y = MathUtils.random(768);
+                break;
+            case 2:
+                x = MathUtils.random(1024);
+                y = 768;
+                break;
+            case 3:
+                x = 0;
+                y = MathUtils.random(768);
+                break;
+        }
+
+        trapsData.add(new GameObject(x, y, angle, 100f));
+        System.out.println(x + " " + y + " " + angle + " ");
+    }
+
+    private void processInput() {
+        float cursorX = Gdx.input.getX();
+        float cursorY = 768 - Gdx.input.getY();
+        float mouseX = mouseData.x;
+        float mouseY = mouseData.y;
+        float angle = MathUtils.atan2(cursorY - mouseY, cursorX - mouseX);
+//        System.out.println(angle + "\t" + (mouseY - cursorY) + "\t" + (mouseX - cursorX));
+    }
+
+    private void progressWorld(float delta) {
+        for (GameObject trap : trapsData) {
+            trap.x += MathUtils.cos(trap.angle) * trap.speed * delta;
+            trap.y += MathUtils.sin(trap.angle) * trap.speed * delta;
+        }
     }
 
     @Override
@@ -104,11 +153,20 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(1f, 0.8f, 1f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        processInput();
+
         float time = (TimeUtils.nanoTime() - start) / 1_000_000_000f;
+        progressWorld(delta);
 
         game.batch.begin();
-        trap.draw(game.batch);
-        mouse.draw(game.batch);
+
+        for (GameObject trapData : trapsData) {
+            trapDrawing.setPosition(trapData.x, trapData.y);
+            trapDrawing.setRotation(trapData.angle);
+            trapDrawing.draw(game.batch);
+        }
+
+        mouseDrawing.draw(game.batch);
         game.batch.end();
 
         if (time < 4) {
@@ -117,7 +175,7 @@ public class GameScreen implements Screen {
                     viewport.getScreenWidth() / 2f - 50, viewport.getScreenHeight() / 2f + 60);
             game.batch.end();
         } else {
-            scoreLabel.setText("Score " + score + "/" + total);
+            scoreLabel.setText("Score " + score + "/" + max_score);
             timeLabel.setText("Time: " + new DecimalFormat("#0.0").format(time - 4f));
             hud.act();
             hud.draw();
@@ -151,18 +209,15 @@ public class GameScreen implements Screen {
         chaseMusic.dispose();
     }
 
-    private class GameObject {
+    private class GameObjectDrawing {
         private final Polygon polygon;
         private final Texture trapTexture;
         private final PolygonRegion region;
         private final PolygonSprite sprite;
         private final float width;
         private final float height;
-        private float rotation;
-        private float x;
-        private float y;
 
-        GameObject(float width, float height, FileHandle fileHandle) {
+        GameObjectDrawing(float width, float height, FileHandle fileHandle) {
             this.width = width;
             this.height = height;
             float[] vertices = new float[]{0, 0, width, 0, width, height, 0, height};
@@ -184,29 +239,13 @@ public class GameScreen implements Screen {
             setPosition(0, 0);
         }
 
-        void rotate(float angle) {
-            rotation = angle;
-            sprite.getRotation();
-            sprite.setRotation(-sprite.getRotation());
-            sprite.rotate(angle);
-            polygon.rotate(angle);
-        }
-
-        float getX() {
-            return x;
-        }
-
-        float getY() {
-            return y;
-        }
-
-        float getRotation() {
-            return rotation;
+        void setRotation(float angle) { // angle in
+            angle *= 180 / MathUtils.PI;
+            sprite.setRotation(angle);
+            polygon.setRotation(angle);
         }
 
         void setPosition(float x, float y) {
-            this.x = x;
-            this.y = y;
             polygon.setPosition(x - width / 2f, y - height / 2f);
             sprite.setPosition(x - width / 2f, y - height / 2f);
         }
@@ -220,10 +259,17 @@ public class GameScreen implements Screen {
         }
     }
 
-    class TrapData {
+    class GameObject {
         float x;
         float y;
         float angle;
         float speed;
+
+        GameObject(float x, float y, float angle, float speed) {
+            this.x = x;
+            this.y = y;
+            this.angle = angle;
+            this.speed = speed;
+        }
     }
 }
