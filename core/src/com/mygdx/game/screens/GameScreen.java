@@ -48,8 +48,8 @@ public class GameScreen implements Screen {
         style.font = font;
         scoreLabel = new Label("ABC", style);
         timeLabel = new Label("DEF", style);
-        Container<Label> scoreLabelContainer = new Container<>(scoreLabel).top().right();
-        Container<Label> timeLabelContainer = new Container<>(timeLabel).top().left();
+        Container<Label> scoreLabelContainer = new Container<>(scoreLabel).top().right().pad(30);
+        Container<Label> timeLabelContainer = new Container<>(timeLabel).top().left().pad(30);
         scoreLabelContainer.setFillParent(true);
         timeLabelContainer.setFillParent(true);
 
