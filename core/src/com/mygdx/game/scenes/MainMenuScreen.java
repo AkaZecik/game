@@ -32,10 +32,12 @@ public class MainMenuScreen implements Screen {
 
         backgroundTexture = new Texture(Gdx.files.internal("tom-and-jerry.jpg"));
 
-        final Table table = new Table();
+        final Table table = new Table().top();
         table.setFillParent(true);
-        table.setDebug(true);
+        table.padTop(200);
         stage.addActor(table);
+
+//        table.setDebug(true);
 
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-Black.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -52,6 +54,7 @@ public class MainMenuScreen implements Screen {
         style.fontColor = Color.WHITE;
 
         final TextButton startButton = new TextButton("Start", style);
+        startButton.pad(30);
         table.add(startButton);
 
         final TextButton exitButton = new TextButton("Exit", style);
@@ -64,7 +67,7 @@ public class MainMenuScreen implements Screen {
                 }
             }
         });
-
+        exitButton.pad(30);
         table.add(exitButton);
 
         music = Gdx.audio.newMusic(Gdx.files.internal("menu.mp3"));
