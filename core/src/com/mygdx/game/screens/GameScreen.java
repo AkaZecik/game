@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -25,6 +26,7 @@ import java.text.DecimalFormat;
 public class GameScreen implements Screen {
     private final TheGame game;
     private final ScreenViewport viewport;
+    private Texture backgroundTexture;
     private Stage hud;
     private long start;
     private int score;
@@ -36,12 +38,14 @@ public class GameScreen implements Screen {
     private BitmapFont countDownFont;
     private Label scoreLabel;
     private Label timeLabel;
+    private GameObjectDrawing cheeseDrawing;
     private GameObjectDrawing mouseDrawing;
     private GameObjectDrawing catDrawing;
     private GameObjectDrawing trapDrawing;
-    private GameObject mouseData;
-    private GameObject catData;
-    private Array<GameObject> trapsData;
+    private GameObject mouse;
+    private GameObject cat;
+    private GameObject cheese;
+    private Array<GameObject> traps;
 
     GameScreen(final TheGame game) {
         this.game = game;
@@ -77,6 +81,8 @@ public class GameScreen implements Screen {
         widgetGroup.addActor(timeLabelContainer);
         hud.addActor(widgetGroup);
 
+        backgroundTexture = new Texture(Gdx.files.internal("floor.jpg"));
+
         chaseMusic = Gdx.audio.newMusic(Gdx.files.internal("chase.mp3"));
         chaseMusic.setLooping(true);
 
@@ -84,15 +90,19 @@ public class GameScreen implements Screen {
         max_traps = 15;
 
         mouseDrawing = new GameObjectDrawing(75, 75, Gdx.files.internal("mouse.png"));
-        mouseDrawing.setRotation(90f);
-        mouseData = new GameObject(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f, 90f, 1f);
+        mouseDrawing.setRotation(90);
+        mouseDrawing.setPosition(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f);
+        mouse = new GameObject(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f, 90, 0f);
+
+        cheeseDrawing = new GameObjectDrawing(75, 75, Gdx.files.internal("cheese.png"));
+        catDrawing = new GameObjectDrawing(116, 40, Gdx.files.internal("cat.png"));
+        cat = new GameObject(-200, -200, 0, 100f);
 
         trapDrawing = new GameObjectDrawing(73, 40, Gdx.files.internal("trap.png"));
-        trapsData = new Array<>();
+        traps = new Array<>();
 
         for (int i = 0; i < 5; ++i) {
             spawnRandomTrap();
-            System.out.println("Spawning");
         }
     }
 
@@ -121,24 +131,42 @@ public class GameScreen implements Screen {
                 break;
         }
 
-        trapsData.add(new GameObject(x, y, angle, 100f));
-        System.out.println(x + " " + y + " " + angle + " ");
+        traps.add(new GameObject(x, y, angle, 100f));
+    }
+
+    private void spawnCheese() {
+        if (cheese != null) {
+            return;
+        }
+
+        float x = MathUtils.random(1024f);
+        float y = MathUtils.random(768f);
+        cheese = new GameObject(x, y, 0, 0);
     }
 
     private void processInput() {
         float cursorX = Gdx.input.getX();
         float cursorY = 768 - Gdx.input.getY();
-        float mouseX = mouseData.x;
-        float mouseY = mouseData.y;
-        float angle = MathUtils.atan2(cursorY - mouseY, cursorX - mouseX);
-//        System.out.println(angle + "\t" + (mouseY - cursorY) + "\t" + (mouseX - cursorX));
+        float mouseX = mouse.x;
+        float mouseY = mouse.y;
+        float deltaX = cursorX - mouseX;
+        float deltaY = cursorY - mouseY;
+
+        if (-1 <= deltaX && deltaX <= 1 && -1 <= deltaY && deltaY <= 1) {
+            mouse.speed = 0;
+        } else {
+            mouse.speed = 150f;
+            mouse.angle = MathUtils.atan2(cursorY - mouseY, cursorX - mouseX);
+        }
     }
 
     private void progressWorld(float delta) {
-        for (GameObject trap : trapsData) {
-            trap.x += MathUtils.cos(trap.angle) * trap.speed * delta;
-            trap.y += MathUtils.sin(trap.angle) * trap.speed * delta;
+        for (GameObject trap : traps) {
+            trap.move(delta);
         }
+
+        cat.move(delta);
+        mouse.move(delta);
     }
 
     @Override
@@ -153,28 +181,32 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(1f, 0.8f, 1f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        processInput();
-
         float time = (TimeUtils.nanoTime() - start) / 1_000_000_000f;
-        progressWorld(delta);
 
         game.batch.begin();
+        game.batch.draw(backgroundTexture, 0, 0);
 
-        for (GameObject trapData : trapsData) {
-            trapDrawing.setPosition(trapData.x, trapData.y);
-            trapDrawing.setRotation(trapData.angle);
-            trapDrawing.draw(game.batch);
-        }
-
+        mouseDrawing.transform(mouse);
         mouseDrawing.draw(game.batch);
-        game.batch.end();
 
         if (time < 4) {
-            game.batch.begin();
             countDownFont.draw(game.batch, Integer.toString(MathUtils.ceil(4f - time)),
                     viewport.getScreenWidth() / 2f - 50, viewport.getScreenHeight() / 2f + 60);
             game.batch.end();
         } else {
+            processInput();
+            spawnCheese();
+            progressWorld(delta);
+
+            for (GameObject trap : traps) {
+                trapDrawing.transform(trap);
+                trapDrawing.draw(game.batch);
+            }
+
+            cheeseDrawing.transform(cheese);
+            cheeseDrawing.draw(game.batch);
+            game.batch.end();
+
             scoreLabel.setText("Score " + score + "/" + max_score);
             timeLabel.setText("Time: " + new DecimalFormat("#0.0").format(time - 4f));
             hud.act();
@@ -207,6 +239,9 @@ public class GameScreen implements Screen {
         fontGenerator.dispose();
         hudFont.dispose();
         chaseMusic.dispose();
+        mouseDrawing.dispose();
+//        catDrawing.dispose();
+        trapDrawing.dispose();
     }
 
     private class GameObjectDrawing {
@@ -239,10 +274,14 @@ public class GameScreen implements Screen {
             setPosition(0, 0);
         }
 
-        void setRotation(float angle) { // angle in
-            angle *= 180 / MathUtils.PI;
-            sprite.setRotation(angle);
-            polygon.setRotation(angle);
+        void setRotation(float radians) {
+            int degrees = (int) (radians * 180 / MathUtils.PI);
+            setRotation(degrees);
+        }
+
+        void setRotation(int degrees) {
+            sprite.setRotation(degrees);
+            polygon.setRotation(degrees);
         }
 
         void setPosition(float x, float y) {
@@ -257,6 +296,20 @@ public class GameScreen implements Screen {
         void dispose() {
             trapTexture.dispose();
         }
+
+        void resize() {
+
+        }
+
+        void transform(GameObject gameObject) {
+            System.out.println(gameObject.angle);
+            setPosition(gameObject.x, gameObject.y);
+            setRotation(gameObject.angle);
+        }
+
+        boolean overlap(GameObjectDrawing other) {
+            return Intersector.overlapConvexPolygons(polygon, other.polygon);
+        }
     }
 
     class GameObject {
@@ -265,11 +318,20 @@ public class GameScreen implements Screen {
         float angle;
         float speed;
 
-        GameObject(float x, float y, float angle, float speed) {
+        GameObject(float x, float y, float radians, float speed) {
             this.x = x;
             this.y = y;
-            this.angle = angle;
+            this.angle = radians;
             this.speed = speed;
+        }
+
+        GameObject(float x, float y, int degrees, float speed) {
+            this(x, y, degrees * MathUtils.PI / 180, speed);
+        }
+
+        void move(float delta) {
+            this.x += MathUtils.cos(angle) * speed * delta;
+            this.y += MathUtils.sin(angle) * speed * delta;
         }
     }
 }
