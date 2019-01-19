@@ -34,7 +34,9 @@ public class GameScreen implements Screen {
     private BitmapFont countDownFont;
     private Label scoreLabel;
     private Label timeLabel;
-    private Trap trap;
+    private GameObject mouse;
+    private GameObject cat;
+    private GameObject trap;
 
     GameScreen(final TheGame game) {
         this.game = game;
@@ -75,15 +77,17 @@ public class GameScreen implements Screen {
 
         total = 10;
 
-        trap = new Trap(200, 400, Gdx.files.internal("trap.png"));
-        trap.rotate(90f);
-        trap.setPosition(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f);
+        mouse = new GameObject(75, 75, Gdx.files.internal("mouse.png"));
+        trap = new GameObject(40, 73, Gdx.files.internal("trap.png"));
+        mouse.setPosition(300, 300);
+        trap.setPosition(100, 100);
+        cat.setPosition(500, 500);
     }
 
     void spawnRandomTrap() {
         int edge = MathUtils.random(3);
         float angle = MathUtils.random(180f);
-        Trap trap = new Trap(30, 55, Gdx.files.internal("trap.png"));
+        GameObject trap = new GameObject(30, 55, Gdx.files.internal("trap.png"));
         trap.rotate(angle + edge * 90f);
         float x = MathUtils.random(1024f);
         float y = MathUtils.random(768f);
@@ -100,11 +104,12 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(1f, 0.8f, 1f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         float time = (TimeUtils.nanoTime() - start) / 1_000_000_000f;
-        game.batch.setProjectionMatrix(viewport.getCamera().combined);
 
         game.batch.begin();
         trap.draw(game.batch);
+        mouse.draw(game.batch);
         game.batch.end();
 
         if (time < 4) {
@@ -115,12 +120,6 @@ public class GameScreen implements Screen {
         } else {
             scoreLabel.setText("Score " + score + "/" + total);
             timeLabel.setText("Time: " + new DecimalFormat("#0.0").format(time - 4f));
-
-//            for (Polygon trap : traps) {
-//
-//                trap.setPosition(trap.getX());
-//            }
-
             hud.act();
             hud.draw();
         }
@@ -153,7 +152,7 @@ public class GameScreen implements Screen {
         chaseMusic.dispose();
     }
 
-    private class Trap {
+    private class GameObject {
         private final Polygon polygon;
         private final Texture trapTexture;
         private final PolygonRegion region;
@@ -164,7 +163,7 @@ public class GameScreen implements Screen {
         private float x;
         private float y;
 
-        Trap(float width, float height, FileHandle fileHandle) {
+        GameObject(float width, float height, FileHandle fileHandle) {
             this.width = width;
             this.height = height;
             float[] vertices = new float[]{0, 0, width, 0, width, height, 0, height};
@@ -174,18 +173,15 @@ public class GameScreen implements Screen {
             trapTexture = new Texture(fileHandle);
             float textureWidth = trapTexture.getWidth();
             float textureHeight = trapTexture.getHeight();
+
             region = new PolygonRegion(new TextureRegion(trapTexture),
                     new float[]{0, 0, textureWidth, 0, textureWidth, textureHeight, 0, textureHeight},
                     new short[]{0, 1, 2, 0, 3, 2});
+
             sprite = new PolygonSprite(region);
-
-            for (float v : sprite.getVertices()) {
-                System.out.print(v);
-                System.out.print(" ");
-            }
-
             sprite.setSize(width, height);
             sprite.setOrigin(width / 2f, height / 2f);
+
             setPosition(0, 0);
         }
 
@@ -212,7 +208,7 @@ public class GameScreen implements Screen {
         void setPosition(float x, float y) {
             this.x = x;
             this.y = y;
-            polygon.setPosition(x, y);
+            polygon.setPosition(x - width / 2f, y - height / 2f);
             sprite.setPosition(x - width / 2f, y - height / 2f);
         }
 
