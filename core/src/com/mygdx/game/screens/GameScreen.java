@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.TheGame;
@@ -37,6 +38,7 @@ public class GameScreen implements Screen {
     private GameObject mouse;
     private GameObject cat;
     private GameObject trap;
+    private Array<TrapData> trapData;
 
     GameScreen(final TheGame game) {
         this.game = game;
@@ -79,9 +81,6 @@ public class GameScreen implements Screen {
 
         mouse = new GameObject(75, 75, Gdx.files.internal("mouse.png"));
         trap = new GameObject(40, 73, Gdx.files.internal("trap.png"));
-        mouse.setPosition(300, 300);
-        trap.setPosition(100, 100);
-        cat.setPosition(500, 500);
     }
 
     void spawnRandomTrap() {
@@ -219,5 +218,12 @@ public class GameScreen implements Screen {
         void dispose() {
             trapTexture.dispose();
         }
+    }
+
+    class TrapData {
+        float x;
+        float y;
+        float angle;
+        float speed;
     }
 }
