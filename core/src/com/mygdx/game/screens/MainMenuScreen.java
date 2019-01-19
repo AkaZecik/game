@@ -18,11 +18,11 @@ import com.mygdx.game.TheGame;
 
 public class MainMenuScreen implements Screen {
     private final TheGame game;
-    private Texture backgroundTexture;
-    private Music music;
-    private Stage stage;
-    private BitmapFont font;
-    private FreeTypeFontGenerator fontGenerator;
+    private final Texture backgroundTexture;
+    private final Music music;
+    private final Stage stage;
+    private final BitmapFont font;
+    private final FreeTypeFontGenerator fontGenerator;
 
     public MainMenuScreen(final TheGame game) {
         this.game = game;
