@@ -2,8 +2,10 @@ package com.mygdx.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -18,9 +20,11 @@ import com.mygdx.game.TheGame;
 public class WinScreen implements Screen {
     private final TheGame game;
     private final Stage stage;
+    private final Texture backgroundImage;
     private final FreeTypeFontGenerator fontGenerator;
     private final BitmapFont font;
-    private final Sound catScream;
+    private final Music catScream;
+    private final Sound partyBlower;
 
     WinScreen(final TheGame game) {
         this.game = game;
@@ -30,6 +34,8 @@ public class WinScreen implements Screen {
         final Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
+
+        backgroundImage = new Texture(Gdx.files.internal("jerry.jpg"));
 
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-Medium.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -70,10 +76,12 @@ public class WinScreen implements Screen {
             }
         });
 
-        table.add(playAgainButon);
+        table.add(playAgainButon).spaceRight(100);
         table.add(menuButton);
 
-        catScream = Gdx.audio.newSound(Gdx.files.internal("cat_scream.wav"));
+        catScream = Gdx.audio.newMusic(Gdx.files.internal("cat_scream.wav"));
+        partyBlower = Gdx.audio.newSound(Gdx.files.internal("blower.mp3"));
+        catScream.setOnCompletionListener(music -> partyBlower.play());
     }
 
     @Override
@@ -83,6 +91,9 @@ public class WinScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        game.batch.begin();
+        game.batch.draw(backgroundImage, 0, 0);
+        game.batch.end();
         stage.act();
         stage.draw();
     }
@@ -112,6 +123,7 @@ public class WinScreen implements Screen {
         font.dispose();
         fontGenerator.dispose();
         catScream.dispose();
+        partyBlower.dispose();
         stage.dispose();
     }
 }

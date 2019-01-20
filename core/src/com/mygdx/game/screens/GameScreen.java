@@ -3,6 +3,7 @@ package com.mygdx.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -33,6 +34,7 @@ public class GameScreen implements Screen {
     private int max_score;
     private int max_traps;
     private Music chaseMusic;
+    private Sound chomp;
     private FreeTypeFontGenerator fontGenerator;
     private BitmapFont hudFont;
     private BitmapFont countDownFont;
@@ -46,6 +48,7 @@ public class GameScreen implements Screen {
     private GameObject cat;
     private GameObject cheese;
     private Array<GameObject> traps;
+    private float secondsSinceStart;
 
     GameScreen(final TheGame game) {
         this.game = game;
@@ -86,8 +89,10 @@ public class GameScreen implements Screen {
         chaseMusic = Gdx.audio.newMusic(Gdx.files.internal("chase.mp3"));
         chaseMusic.setLooping(true);
 
-        max_score = 10;
-        max_traps = 15;
+        chomp = Gdx.audio.newSound(Gdx.files.internal("chomp.mp3"));
+
+        max_score = 15;
+        max_traps = 30;
 
         mouseDrawing = new GameObjectDrawing(75, 75, Gdx.files.internal("mouse.png"));
         mouseDrawing.setRotation(90);
@@ -107,11 +112,11 @@ public class GameScreen implements Screen {
         traps = new Array<>();
 
         for (int i = 0; i < 5; ++i) {
-            spawnRandomTrap();
+            traps.add(randomTrap());
         }
     }
 
-    private void spawnRandomTrap() {
+    private GameObject randomTrap() {
         int edge = MathUtils.random(3);
         float angle = MathUtils.random(MathUtils.PI) + edge * MathUtils.PI / 2;
         float x = 0;
@@ -119,24 +124,25 @@ public class GameScreen implements Screen {
 
         switch (edge) {
             case 0:
-                x = MathUtils.random(1024);
-                y = 0;
+                x = MathUtils.random(1224);
+                y = -100;
                 break;
             case 1:
-                x = 1024;
-                y = MathUtils.random(768);
+                x = 1124;
+                y = MathUtils.random(968);
                 break;
             case 2:
-                x = MathUtils.random(1024);
-                y = 768;
+                x = MathUtils.random(1224);
+                y = 868;
                 break;
             case 3:
-                x = 0;
-                y = MathUtils.random(768);
+                x = -100;
+                y = MathUtils.random(968);
                 break;
         }
 
-        traps.add(new GameObject(x, y, angle, 100f));
+        return new GameObject(x, y, angle,
+                100f + secondsSinceStart / 30f * 50f);
     }
 
     private void spawnCheese() {
@@ -165,6 +171,14 @@ public class GameScreen implements Screen {
     private void progressWorld(float delta) {
         for (GameObject trap : traps) {
             trap.move(delta);
+
+            if (trap.x < -100 || trap.x > 1124 || trap.y < -100 || trap.y > 868) {
+                trap.copy(randomTrap());
+            }
+        }
+
+        if (secondsSinceStart / 5 > traps.size) {
+            traps.add(randomTrap());
         }
 
         cat.angle = MathUtils.atan2(mouse.y - cat.y, mouse.x - cat.x);
@@ -173,34 +187,31 @@ public class GameScreen implements Screen {
 
         if (mouseDrawing.overlap(cheeseDrawing)) {
             ++score;
+            chomp.play();
 
-            if (score == max_score) {
+            do {
+                spawnCheese();
+            } while (mouseDrawing.overlap(cheeseDrawing));
+        }
+
+        if (mouseDrawing.overlap(catDrawing)) {
+            if (score < max_score) {
+                Gdx.app.postRunnable(() -> {
+                    dispose();
+                    game.setScreen(new GameOverScreen(game, score, max_score));
+                });
+            } else {
                 Gdx.app.postRunnable(() -> {
                     dispose();
                     game.setScreen(new WinScreen(game));
                 });
-            } else {
-                do {
-                    spawnCheese();
-                } while (mouseDrawing.overlap(cheeseDrawing));
             }
-        }
-
-        if (mouseDrawing.overlap(catDrawing)) {
-            System.out.println("LOOSER");
-
-            Gdx.app.postRunnable(() -> {
-                dispose();
-                game.setScreen(new GameOverScreen(game, score, max_score));
-            });
         }
 
         for (GameObject trap : traps) {
             trapDrawing.transform(trap);
 
             if (mouseDrawing.overlap(trapDrawing)) {
-                System.out.println("TRAPPED!");
-
                 Gdx.app.postRunnable(() -> {
                     dispose();
                     game.setScreen(new GameOverScreen(game, score, max_score));
@@ -233,6 +244,7 @@ public class GameScreen implements Screen {
                     viewport.getScreenWidth() / 2f - 50, viewport.getScreenHeight() / 2f + 60);
             game.batch.end();
         } else {
+            secondsSinceStart = time - 4f;
             processInput();
             progressWorld(delta);
 
@@ -245,7 +257,7 @@ public class GameScreen implements Screen {
             game.batch.end();
 
             scoreLabel.setText("Score " + score + "/" + max_score);
-            timeLabel.setText("Time: " + new DecimalFormat("#0.0").format(time - 4f));
+            timeLabel.setText("Time: " + new DecimalFormat("#0.0").format(secondsSinceStart));
             hud.act();
             hud.draw();
         }
@@ -369,6 +381,13 @@ public class GameScreen implements Screen {
         void move(float delta) {
             this.x += MathUtils.cos(angle) * speed * delta;
             this.y += MathUtils.sin(angle) * speed * delta;
+        }
+
+        void copy(GameObject gameObject) {
+            x = gameObject.x;
+            y = gameObject.y;
+            angle = gameObject.angle;
+            speed = gameObject.speed;
         }
     }
 }

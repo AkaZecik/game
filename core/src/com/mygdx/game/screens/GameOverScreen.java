@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -17,6 +18,7 @@ import com.mygdx.game.TheGame;
 
 public class GameOverScreen implements Screen {
     private final TheGame game;
+    private final Texture backgroundImage;
     private final Stage stage;
     private final FreeTypeFontGenerator fontGenerator;
     private final BitmapFont font;
@@ -30,6 +32,8 @@ public class GameOverScreen implements Screen {
         final Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
+
+        backgroundImage = new Texture(Gdx.files.internal("tom_and_jerry3.jpg"));
 
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-Medium.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -86,6 +90,9 @@ public class GameOverScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        game.batch.begin();
+        game.batch.draw(backgroundImage, 0, 0);
+        game.batch.end();
         stage.act();
         stage.draw();
     }

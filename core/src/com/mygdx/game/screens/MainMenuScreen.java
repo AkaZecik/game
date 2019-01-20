@@ -30,7 +30,7 @@ public class MainMenuScreen implements Screen {
         stage = new Stage(new ScreenViewport(), game.batch);
         Gdx.input.setInputProcessor(stage);
 
-        backgroundTexture = new Texture(Gdx.files.internal("tom-and-jerry.jpg"));
+        backgroundTexture = new Texture(Gdx.files.internal("tom_and_jerry1.jpg"));
 
         final Table table = new Table().top();
         table.setFillParent(true);
@@ -61,7 +61,8 @@ public class MainMenuScreen implements Screen {
                 game.setScreen(new GameScreen(game));
             }
         });
-        startButton.pad(30);
+        startButton.padLeft(30);
+        startButton.padRight(30);
         table.add(startButton);
 
         final TextButton exitButton = new TextButton("Exit", style);
@@ -72,7 +73,8 @@ public class MainMenuScreen implements Screen {
                 Gdx.app.exit();
             }
         });
-        exitButton.pad(30);
+        exitButton.padLeft(30);
+        exitButton.padRight(30);
         table.add(exitButton);
 
         music = Gdx.audio.newMusic(Gdx.files.internal("menu.mp3"));
