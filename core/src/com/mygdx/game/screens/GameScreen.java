@@ -111,7 +111,7 @@ public class GameScreen implements Screen {
         trapDrawing = new GameObjectDrawing(73, 40, Gdx.files.internal("trap.png"));
         traps = new Array<>();
 
-        for (int i = 0; i < 5; ++i) {
+        for (int i = 0; i < 10; ++i) {
             traps.add(randomTrap());
         }
     }
@@ -124,20 +124,20 @@ public class GameScreen implements Screen {
 
         switch (edge) {
             case 0:
-                x = MathUtils.random(1224);
-                y = -100;
+                x = MathUtils.random(1024);
+                y = -40;
                 break;
             case 1:
-                x = 1124;
-                y = MathUtils.random(968);
+                x = 1064;
+                y = MathUtils.random(768);
                 break;
             case 2:
-                x = MathUtils.random(1224);
-                y = 868;
+                x = MathUtils.random(1024);
+                y = 828;
                 break;
             case 3:
-                x = -100;
-                y = MathUtils.random(968);
+                x = -40;
+                y = MathUtils.random(768);
                 break;
         }
 
@@ -172,7 +172,7 @@ public class GameScreen implements Screen {
         for (GameObject trap : traps) {
             trap.move(delta);
 
-            if (trap.x < -100 || trap.x > 1124 || trap.y < -100 || trap.y > 868) {
+            if (trap.x < -40 || trap.x > 1064 || trap.y < -40 || trap.y > 828) {
                 trap.copy(randomTrap());
             }
         }
@@ -188,6 +188,8 @@ public class GameScreen implements Screen {
         if (mouseDrawing.overlap(cheeseDrawing)) {
             ++score;
             chomp.play();
+            float size = MathUtils.clamp(75f * score / max_score, 0f, 75f);
+            mouseDrawing.resize(75f + size, 75f + size);
 
             do {
                 spawnCheese();
@@ -298,16 +300,16 @@ public class GameScreen implements Screen {
         private final Texture trapTexture;
         private final PolygonRegion region;
         private final PolygonSprite sprite;
-        private final float width;
-        private final float height;
+        private float width;
+        private float height;
 
         GameObjectDrawing(float width, float height, FileHandle fileHandle) {
             this.width = width;
             this.height = height;
             float[] vertices = new float[]{0, 0, width, 0, width, height, 0, height};
             polygon = new Polygon(vertices);
-            polygon.setOrigin(width / 2f, height / 2f);
-            polygon.setPosition(0, 0);
+            setupPolygon();
+
             trapTexture = new Texture(fileHandle);
             float textureWidth = trapTexture.getWidth();
             float textureHeight = trapTexture.getHeight();
@@ -317,10 +319,20 @@ public class GameScreen implements Screen {
                     new short[]{0, 1, 2, 0, 3, 2});
 
             sprite = new PolygonSprite(region);
-            sprite.setSize(width, height);
-            sprite.setOrigin(width / 2f, height / 2f);
+            setupSprite();
 
             setPosition(0, 0);
+        }
+
+        private void setupPolygon() {
+            float[] vertices = new float[]{0, 0, width, 0, width, height, 0, height};
+            polygon.setVertices(vertices);
+            polygon.setOrigin(width / 2f, height / 2f);
+        }
+
+        private void setupSprite() {
+            sprite.setSize(width, height);
+            sprite.setOrigin(width / 2f, height / 2f);
         }
 
         void setRotation(float radians) {
@@ -347,8 +359,11 @@ public class GameScreen implements Screen {
             trapTexture.dispose();
         }
 
-        void resize() {
-
+        void resize(float width, float height) {
+            this.width = width;
+            this.height = height;
+            setupPolygon();
+            setupSprite();
         }
 
         void transform(GameObject gameObject) {

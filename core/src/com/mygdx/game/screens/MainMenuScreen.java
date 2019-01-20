@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -19,9 +20,10 @@ import com.mygdx.game.TheGame;
 public class MainMenuScreen implements Screen {
     private final TheGame game;
     private final Texture backgroundTexture;
-    private final Music music;
+    private final Music theme;
+    private final Music menu;
     private final Stage stage;
-    private final BitmapFont font;
+    private final BitmapFont font1;
     private final FreeTypeFontGenerator fontGenerator;
 
     public MainMenuScreen(final TheGame game) {
@@ -34,10 +36,8 @@ public class MainMenuScreen implements Screen {
 
         final Table table = new Table().top();
         table.setFillParent(true);
-        table.padTop(200);
+        table.padTop(50);
         stage.addActor(table);
-
-//        table.setDebug(true);
 
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-Black.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -45,15 +45,22 @@ public class MainMenuScreen implements Screen {
         parameter.size = 72;
         parameter.borderColor = Color.BLACK;
         parameter.borderWidth = 2;
-        font = fontGenerator.generateFont(parameter);
+        font1 = fontGenerator.generateFont(parameter);
 
-        final TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        style.font = font;
-        style.overFontColor = Color.YELLOW;
-        style.downFontColor = Color.RED;
-        style.fontColor = Color.WHITE;
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font1;
+        labelStyle.fontColor = Color.BROWN;
+        Label gameName = new Label("Tom 'n Jerry Game", labelStyle);
+        table.add(gameName).colspan(2).spaceBottom(100);
+        table.row();
 
-        final TextButton startButton = new TextButton("Start", style);
+        final TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = font1;
+        buttonStyle.overFontColor = Color.YELLOW;
+        buttonStyle.downFontColor = Color.RED;
+        buttonStyle.fontColor = Color.WHITE;
+
+        final TextButton startButton = new TextButton("Start", buttonStyle);
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -61,11 +68,9 @@ public class MainMenuScreen implements Screen {
                 game.setScreen(new GameScreen(game));
             }
         });
-        startButton.padLeft(30);
-        startButton.padRight(30);
-        table.add(startButton);
+        table.add(startButton).spaceRight(100);
 
-        final TextButton exitButton = new TextButton("Exit", style);
+        final TextButton exitButton = new TextButton("Exit", buttonStyle);
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -73,17 +78,18 @@ public class MainMenuScreen implements Screen {
                 Gdx.app.exit();
             }
         });
-        exitButton.padLeft(30);
-        exitButton.padRight(30);
         table.add(exitButton);
 
-        music = Gdx.audio.newMusic(Gdx.files.internal("menu.mp3"));
-        music.setLooping(true);
+        theme = Gdx.audio.newMusic(Gdx.files.internal("tom_and_jerry_theme.mp3"));
+        menu = Gdx.audio.newMusic(Gdx.files.internal("menu.mp3"));
+        menu.setLooping(true);
+        theme.setOnCompletionListener(music -> menu.play());
+
     }
 
     @Override
     public void show() {
-        music.play();
+        theme.play();
     }
 
     @Override
@@ -120,9 +126,9 @@ public class MainMenuScreen implements Screen {
     @Override
     public void dispose() {
         fontGenerator.dispose();
-        font.dispose();
+        font1.dispose();
         backgroundTexture.dispose();
-        music.dispose();
+        theme.dispose();
         stage.dispose();
     }
 }

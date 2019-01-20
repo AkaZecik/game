@@ -29,8 +29,9 @@ public class GameOverScreen implements Screen {
         stage = new Stage(new ScreenViewport(), game.batch);
         Gdx.input.setInputProcessor(stage);
 
-        final Table table = new Table();
+        final Table table = new Table().top();
         table.setFillParent(true);
+        table.padTop(50);
         stage.addActor(table);
 
         backgroundImage = new Texture(Gdx.files.internal("tom_and_jerry3.jpg"));
@@ -45,12 +46,13 @@ public class GameOverScreen implements Screen {
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
+        labelStyle.fontColor = Color.RED;
         Label gameOverLabel = new Label("Game Over!", labelStyle);
         Label scoreLabel = new Label("Your score: " + score + "/" + max_score, labelStyle);
 
         table.add(gameOverLabel).colspan(2);
         table.row();
-        table.add(scoreLabel).colspan(2);
+        table.add(scoreLabel).colspan(2).spaceBottom(100);
         table.row();
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
@@ -77,7 +79,7 @@ public class GameOverScreen implements Screen {
             }
         });
 
-        table.add(playAgainButon);
+        table.add(playAgainButon).spaceRight(100);
         table.add(menuButton);
 
         gameOverSound = Gdx.audio.newSound(Gdx.files.internal("game_over.mp3"));
