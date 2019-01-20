@@ -99,7 +99,7 @@ public class GameScreen implements Screen {
         mouseDrawing.setPosition(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f);
         mouse = new GameObject(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f, 90, 0f);
 
-        cheeseDrawing = new GameObjectDrawing(75, 75, Gdx.files.internal("cheese.png"));
+        cheeseDrawing = new GameObjectDrawing(75, 75, Gdx.files.internal("cheese2.png"));
 
         catDrawing = new GameObjectDrawing(116, 40, Gdx.files.internal("cat.png"));
         cat = new GameObject(-200, -200, 0, 100f);
