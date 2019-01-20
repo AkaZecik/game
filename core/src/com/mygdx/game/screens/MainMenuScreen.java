@@ -129,6 +129,7 @@ public class MainMenuScreen implements Screen {
         font1.dispose();
         backgroundTexture.dispose();
         theme.dispose();
+        menu.dispose();
         stage.dispose();
     }
 }
