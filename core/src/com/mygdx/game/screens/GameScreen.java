@@ -49,8 +49,8 @@ public class GameScreen implements Screen {
     GameScreen(final TheGame game, int maxCheese, int maxTraps, float mouseSpeedFactor) {
         this.game = game;
         viewport = new ScreenViewport();
-        hud = new Stage(viewport, this.game.batch);
-        this.game.batch.setProjectionMatrix(viewport.getCamera().combined);
+        hud = new Stage(viewport, this.game.getBatch());
+        this.game.getBatch().setProjectionMatrix(viewport.getCamera().combined);
         hud.setDebugAll(true);
 
         Label.LabelStyle style = new Label.LabelStyle();
@@ -225,28 +225,28 @@ public class GameScreen implements Screen {
 
         float time = (TimeUtils.nanoTime() - start) / 1_000_000_000f;
 
-        game.batch.begin();
-        game.batch.draw(backgroundTexture, 0, 0);
+        game.getBatch().begin();
+        game.getBatch().draw(backgroundTexture, 0, 0);
 
-        mouseDrawing.draw(game.batch, mouse);
+        mouseDrawing.draw(game.getBatch(), mouse);
 
         if (time < 4) {
             ((BitmapFont) game.getAssetManager().get("font7.ttf"))
-                    .draw(game.batch, Integer.toString(MathUtils.ceil(4f - time)),
+                    .draw(game.getBatch(), Integer.toString(MathUtils.ceil(4f - time)),
                             viewport.getScreenWidth() / 2f - 50, viewport.getScreenHeight() / 2f + 60);
-            game.batch.end();
+            game.getBatch().end();
         } else {
             secondsSinceStart = time - 4f;
             processInput();
             progressWorld(delta);
 
             for (GameObject trap : traps) {
-                trapDrawing.draw(game.batch, trap);
+                trapDrawing.draw(game.getBatch(), trap);
             }
 
-            catDrawing.draw(game.batch, cat);
-            cheeseDrawing.draw(game.batch, cheese);
-            game.batch.end();
+            catDrawing.draw(game.getBatch(), cat);
+            cheeseDrawing.draw(game.getBatch(), cheese);
+            game.getBatch().end();
 
             scoreLabel.setText("Score " + score + "/" + maxCheese);
             timeLabel.setText("Time: " + new DecimalFormat("#0.0").format(secondsSinceStart));

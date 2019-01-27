@@ -22,7 +22,7 @@ public class GameOverScreen implements Screen {
 
     GameOverScreen(final TheGame game, int score, int maxCheese, int maxTraps, float mouseSpeedFactor) {
         this.game = game;
-        stage = new Stage(new ScreenViewport(), game.batch);
+        stage = new Stage(new ScreenViewport(), game.getBatch());
         Gdx.input.setInputProcessor(stage);
 
         final Table table = new Table().top();
@@ -79,9 +79,9 @@ public class GameOverScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        game.batch.begin();
-        game.batch.draw(backgroundImage, 0, 0);
-        game.batch.end();
+        game.getBatch().begin();
+        game.getBatch().draw(backgroundImage, 0, 0);
+        game.getBatch().end();
         stage.act();
         stage.draw();
     }

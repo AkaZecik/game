@@ -26,7 +26,7 @@ public class SetupScreen implements Screen {
     SetupScreen(final TheGame game) {
         this.game = game;
 
-        stage = new Stage(new ScreenViewport(), game.batch);
+        stage = new Stage(new ScreenViewport(), game.getBatch());
         Gdx.input.setInputProcessor(stage);
 
         backgroundTexture = game.getAssetManager().get("tom_and_jerry1.jpg");

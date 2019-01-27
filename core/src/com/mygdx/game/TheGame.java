@@ -17,7 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.mygdx.game.screens.MainMenuScreen;
 
 public class TheGame extends Game {
-    public PolygonSpriteBatch batch;
+    private volatile PolygonSpriteBatch batch;
     private volatile AssetManager assetManager;
 
     @Override
