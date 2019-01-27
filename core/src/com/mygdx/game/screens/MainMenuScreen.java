@@ -32,7 +32,8 @@ public class MainMenuScreen implements Screen {
         stage = new Stage(new ScreenViewport(), game.batch);
         Gdx.input.setInputProcessor(stage);
 
-        backgroundTexture = new Texture(Gdx.files.internal("tom_and_jerry1.jpg"));
+        backgroundTexture = game.getAssetManager().get("tom_and_jerry1.jpg");
+//        backgroundTexture = new Texture(Gdx.files.internal("tom_and_jerry1.jpg"));
 
         final Table table = new Table().top();
         table.setFillParent(true);
@@ -80,8 +81,10 @@ public class MainMenuScreen implements Screen {
         });
         table.add(exitButton);
 
-        theme = Gdx.audio.newMusic(Gdx.files.internal("tom_and_jerry_theme.mp3"));
-        menu = Gdx.audio.newMusic(Gdx.files.internal("menu.mp3"));
+        theme = game.getAssetManager().get("tom_and_jerry_theme.mp3");
+        menu = game.getAssetManager().get("menu.mp3");
+//        theme = Gdx.audio.newMusic(Gdx.files.internal("tom_and_jerry_theme.mp3"));
+//        menu = Gdx.audio.newMusic(Gdx.files.internal("menu.mp3"));
         menu.setLooping(true);
         theme.setOnCompletionListener(music -> menu.play());
 
@@ -89,7 +92,9 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
-        theme.play();
+        if (!theme.isPlaying()) {
+            theme.play();
+        }
     }
 
     @Override
@@ -127,9 +132,9 @@ public class MainMenuScreen implements Screen {
     public void dispose() {
         fontGenerator.dispose();
         font1.dispose();
-        backgroundTexture.dispose();
-        theme.dispose();
-        menu.dispose();
+//        backgroundTexture.dispose();
+//        theme.dispose();
+//        menu.dispose();
         stage.dispose();
     }
 }

@@ -35,7 +35,8 @@ public class WinScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
-        backgroundImage = new Texture(Gdx.files.internal("jerry.jpg"));
+        backgroundImage = game.getAssetManager().get("jerry.jpg");
+//        backgroundImage = new Texture(Gdx.files.internal("jerry.jpg"));
 
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-Medium.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -79,8 +80,10 @@ public class WinScreen implements Screen {
         table.add(playAgainButon).spaceRight(100);
         table.add(menuButton);
 
-        catScream = Gdx.audio.newMusic(Gdx.files.internal("cat_scream.wav"));
-        partyBlower = Gdx.audio.newSound(Gdx.files.internal("blower.mp3"));
+        catScream = game.getAssetManager().get("cat_scream.wav");
+//        catScream = Gdx.audio.newMusic(Gdx.files.internal("cat_scream.wav"));
+        partyBlower = game.getAssetManager().get("blower.mp3");
+//        partyBlower = Gdx.audio.newSound(Gdx.files.internal("blower.mp3"));
         catScream.setOnCompletionListener(music -> partyBlower.play());
     }
 
@@ -115,15 +118,15 @@ public class WinScreen implements Screen {
 
     @Override
     public void hide() {
-
+        catScream.stop();
     }
 
     @Override
     public void dispose() {
         font.dispose();
         fontGenerator.dispose();
-        catScream.dispose();
-        partyBlower.dispose();
+//        catScream.dispose();
+//        partyBlower.dispose();
         stage.dispose();
     }
 }

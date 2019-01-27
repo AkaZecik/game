@@ -26,11 +26,14 @@ public class TheGame extends Game {
         assetManager = new AssetManager();
         assetManager.load("skin/uiskin.json", Skin.class);
         assetManager.load("tom_and_jerry1.jpg", Texture.class);
+        assetManager.load("tom_and_jerry2.jpg", Texture.class);
+        assetManager.load("tom_and_jerry3.jpg", Texture.class);
         assetManager.load("floor.jpg", Texture.class);
         assetManager.load("mouse.png", Texture.class);
         assetManager.load("cat.png", Texture.class);
         assetManager.load("trap.png", Texture.class);
         assetManager.load("jerry.jpg", Texture.class);
+        assetManager.load("cheese2.png", Texture.class);
         assetManager.load("chase.mp3", Music.class);
         assetManager.load("menu.mp3", Music.class);
         assetManager.load("cat_scream.wav", Music.class);
@@ -65,7 +68,7 @@ public class TheGame extends Game {
         parameter.fontParameters.size = 72;
         assetManager.load("font72bl.ttf", BitmapFont.class, parameter);
 
-//        assetManager.finishLoading();
+        assetManager.finishLoading();
 
         this.setScreen(new MainMenuScreen(this));
     }

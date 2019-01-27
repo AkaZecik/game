@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -27,28 +26,28 @@ import java.text.DecimalFormat;
 public class GameScreen implements Screen {
     private final TheGame game;
     private final ScreenViewport viewport;
-    private Texture backgroundTexture;
-    private Stage hud;
+    private final Texture backgroundTexture;
+    private final Stage hud;
+    private final Music chaseMusic;
+    private final Sound chomp;
+    private final FreeTypeFontGenerator fontGenerator;
+    private final BitmapFont hudFont;
+    private final BitmapFont countDownFont;
+    private final Label scoreLabel;
+    private final Label timeLabel;
+    private final GameObjectDrawing cheeseDrawing;
+    private final GameObjectDrawing mouseDrawing;
+    private final GameObjectDrawing catDrawing;
+    private final GameObjectDrawing trapDrawing;
+    private final GameObject mouse;
+    private final GameObject cat;
+    private final Array<GameObject> traps;
     private long start;
     private int score;
     private int maxCheese;
     private int maxTraps;
     private float mouseSpeedFactor;
-    private Music chaseMusic;
-    private Sound chomp;
-    private FreeTypeFontGenerator fontGenerator;
-    private BitmapFont hudFont;
-    private BitmapFont countDownFont;
-    private Label scoreLabel;
-    private Label timeLabel;
-    private GameObjectDrawing cheeseDrawing;
-    private GameObjectDrawing mouseDrawing;
-    private GameObjectDrawing catDrawing;
-    private GameObjectDrawing trapDrawing;
-    private GameObject mouse;
-    private GameObject cat;
     private GameObject cheese;
-    private Array<GameObject> traps;
     private float secondsSinceStart;
 
     GameScreen(final TheGame game, int maxCheese, int maxTraps, float mouseSpeedFactor) {
@@ -85,32 +84,35 @@ public class GameScreen implements Screen {
         widgetGroup.addActor(timeLabelContainer);
         hud.addActor(widgetGroup);
 
-        backgroundTexture = new Texture(Gdx.files.internal("floor.jpg"));
+        backgroundTexture = game.getAssetManager().get("floor.jpg");
+//        backgroundTexture = new Texture(Gdx.files.internal("floor.jpg"));
 
-        chaseMusic = Gdx.audio.newMusic(Gdx.files.internal("chase.mp3"));
+        chaseMusic = game.getAssetManager().get("chase.mp3");
+//        chaseMusic = Gdx.audio.newMusic(Gdx.files.internal("chase.mp3"));
         chaseMusic.setLooping(true);
 
-        chomp = Gdx.audio.newSound(Gdx.files.internal("chomp.mp3"));
+        chomp = game.getAssetManager().get("chomp.mp3");
+//        chomp = Gdx.audio.newSound(Gdx.files.internal("chomp.mp3"));
 
         this.maxCheese = maxCheese;
         this.maxTraps = maxTraps;
         this.mouseSpeedFactor = mouseSpeedFactor;
 
-        mouseDrawing = new GameObjectDrawing(75, 75, Gdx.files.internal("mouse.png"));
+        mouseDrawing = new GameObjectDrawing(75, 75, game.getAssetManager().get("mouse.png")/*Gdx.files.internal("mouse.png")*/);
         mouseDrawing.setRotation(90);
         mouseDrawing.setPosition(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f);
         mouse = new GameObject(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f, 90, 0f);
 
-        cheeseDrawing = new GameObjectDrawing(75, 75, Gdx.files.internal("cheese2.png"));
+        cheeseDrawing = new GameObjectDrawing(75, 75, game.getAssetManager().get("cheese2.png")/*Gdx.files.internal("cheese2.png")*/);
 
-        catDrawing = new GameObjectDrawing(116, 40, Gdx.files.internal("cat.png"));
+        catDrawing = new GameObjectDrawing(116, 40, game.getAssetManager().get("cat.png")/*Gdx.files.internal("cat.png")*/);
         cat = new GameObject(-200, -200, 0, 100f);
 
         do {
             spawnCheese();
         } while (mouseDrawing.overlap(cheeseDrawing));
 
-        trapDrawing = new GameObjectDrawing(73, 40, Gdx.files.internal("trap.png"));
+        trapDrawing = new GameObjectDrawing(73, 40, game.getAssetManager().get("trap.png")/*Gdx.files.internal("trap.png")*/);
         traps = new Array<>();
 
         for (int i = 0; i < 10; ++i) {
@@ -284,39 +286,39 @@ public class GameScreen implements Screen {
 
     @Override
     public void hide() {
-
+        chaseMusic.stop(); // TODO
     }
 
     @Override
     public void dispose() {
         fontGenerator.dispose();
         hudFont.dispose();
-        chaseMusic.dispose();
-        mouseDrawing.dispose();
-        catDrawing.dispose();
-        trapDrawing.dispose();
+//        chaseMusic.dispose();
+//        mouseDrawing.dispose();
+//        catDrawing.dispose();
+//        trapDrawing.dispose();
     }
 
     private class GameObjectDrawing {
         private final Polygon polygon;
-        private final Texture trapTexture;
+        private final Texture texture;
         private final PolygonRegion region;
         private final PolygonSprite sprite;
         private float width;
         private float height;
 
-        GameObjectDrawing(float width, float height, FileHandle fileHandle) {
+        GameObjectDrawing(float width, float height, Texture texture) {
             this.width = width;
             this.height = height;
             float[] vertices = new float[]{0, 0, width, 0, width, height, 0, height};
             polygon = new Polygon(vertices);
             setupPolygon();
 
-            trapTexture = new Texture(fileHandle);
-            float textureWidth = trapTexture.getWidth();
-            float textureHeight = trapTexture.getHeight();
+            this.texture = texture;
+            float textureWidth = texture.getWidth();
+            float textureHeight = texture.getHeight();
 
-            region = new PolygonRegion(new TextureRegion(trapTexture),
+            region = new PolygonRegion(new TextureRegion(texture),
                     new float[]{0, 0, textureWidth, 0, textureWidth, textureHeight, 0, textureHeight},
                     new short[]{0, 1, 2, 0, 3, 2});
 
@@ -357,9 +359,9 @@ public class GameScreen implements Screen {
             sprite.draw(batch);
         }
 
-        void dispose() {
-            trapTexture.dispose();
-        }
+//        void dispose() {
+//            texture.dispose();
+//        }
 
         void resize(float width, float height) {
             this.width = width;
