@@ -60,15 +60,15 @@ public class MainMenuScreen implements Screen {
         buttonStyle.downFontColor = Color.RED;
         buttonStyle.fontColor = Color.WHITE;
 
-        final TextButton startButton = new TextButton("Start", buttonStyle);
-        startButton.addListener(new ClickListener() {
+        final TextButton playButton = new TextButton("Play", buttonStyle);
+        playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dispose();
-                game.setScreen(new GameScreen(game));
+                game.setScreen(new SetupScreen(game));
             }
         });
-        table.add(startButton).spaceRight(100);
+        table.add(playButton).spaceRight(100);
 
         final TextButton exitButton = new TextButton("Exit", buttonStyle);
         exitButton.addListener(new ClickListener() {

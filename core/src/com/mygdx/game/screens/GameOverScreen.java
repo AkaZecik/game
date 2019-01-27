@@ -24,7 +24,7 @@ public class GameOverScreen implements Screen {
     private final BitmapFont font;
     private final Sound gameOverSound;
 
-    GameOverScreen(final TheGame game, int score, int max_score) {
+    GameOverScreen(final TheGame game, int score, int maxCheese, int maxTraps, float mouseSpeedFactor) {
         this.game = game;
         stage = new Stage(new ScreenViewport(), game.batch);
         Gdx.input.setInputProcessor(stage);
@@ -48,7 +48,7 @@ public class GameOverScreen implements Screen {
         labelStyle.font = font;
         labelStyle.fontColor = Color.RED;
         Label gameOverLabel = new Label("Game Over!", labelStyle);
-        Label scoreLabel = new Label("Your score: " + score + "/" + max_score, labelStyle);
+        Label scoreLabel = new Label("Your score: " + score + "/" + maxCheese, labelStyle);
 
         table.add(gameOverLabel).colspan(2);
         table.row();
@@ -67,7 +67,7 @@ public class GameOverScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dispose();
-                game.setScreen(new GameScreen(game));
+                game.setScreen(new GameScreen(game, maxCheese, maxTraps, mouseSpeedFactor));
             }
         });
 

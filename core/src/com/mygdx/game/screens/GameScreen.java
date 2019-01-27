@@ -31,8 +31,9 @@ public class GameScreen implements Screen {
     private Stage hud;
     private long start;
     private int score;
-    private int max_score;
-    private int max_traps;
+    private int maxCheese;
+    private int maxTraps;
+    private float mouseSpeedFactor;
     private Music chaseMusic;
     private Sound chomp;
     private FreeTypeFontGenerator fontGenerator;
@@ -50,7 +51,7 @@ public class GameScreen implements Screen {
     private Array<GameObject> traps;
     private float secondsSinceStart;
 
-    GameScreen(final TheGame game) {
+    GameScreen(final TheGame game, int maxCheese, int maxTraps, float mouseSpeedFactor) {
         this.game = game;
         viewport = new ScreenViewport();
         hud = new Stage(viewport, this.game.batch);
@@ -91,8 +92,9 @@ public class GameScreen implements Screen {
 
         chomp = Gdx.audio.newSound(Gdx.files.internal("chomp.mp3"));
 
-        max_score = 15;
-        max_traps = 30;
+        this.maxCheese = maxCheese;
+        this.maxTraps = maxTraps;
+        this.mouseSpeedFactor = mouseSpeedFactor;
 
         mouseDrawing = new GameObjectDrawing(75, 75, Gdx.files.internal("mouse.png"));
         mouseDrawing.setRotation(90);
@@ -163,7 +165,7 @@ public class GameScreen implements Screen {
         if (-1 <= deltaX && deltaX <= 1 && -1 <= deltaY && deltaY <= 1) {
             mouse.speed = 0;
         } else {
-            mouse.speed = 200f;
+            mouse.speed = 200f * mouseSpeedFactor;
             mouse.angle = MathUtils.atan2(cursorY - mouseY, cursorX - mouseX);
         }
     }
@@ -177,7 +179,7 @@ public class GameScreen implements Screen {
             }
         }
 
-        if (traps.size <= max_traps && secondsSinceStart / 5 > traps.size) {
+        if (traps.size <= maxTraps && secondsSinceStart / 5 > traps.size) {
             traps.add(randomTrap());
         }
 
@@ -188,7 +190,7 @@ public class GameScreen implements Screen {
         if (mouseDrawing.overlap(cheeseDrawing)) {
             ++score;
             chomp.play();
-            float size = MathUtils.clamp(75f * score / max_score, 0f, 75f);
+            float size = MathUtils.clamp(75f * score / maxCheese, 0f, 75f);
             mouseDrawing.resize(75f + size, 75f + size);
 
             do {
@@ -197,15 +199,15 @@ public class GameScreen implements Screen {
         }
 
         if (mouseDrawing.overlap(catDrawing)) {
-            if (score < max_score) {
+            if (score < maxCheese) {
                 Gdx.app.postRunnable(() -> {
                     dispose();
-                    game.setScreen(new GameOverScreen(game, score, max_score));
+                    game.setScreen(new GameOverScreen(game, score, maxCheese, maxTraps, mouseSpeedFactor));
                 });
             } else {
                 Gdx.app.postRunnable(() -> {
                     dispose();
-                    game.setScreen(new WinScreen(game));
+                    game.setScreen(new WinScreen(game, maxCheese, maxTraps, mouseSpeedFactor));
                 });
             }
         }
@@ -216,7 +218,7 @@ public class GameScreen implements Screen {
             if (mouseDrawing.overlap(trapDrawing)) {
                 Gdx.app.postRunnable(() -> {
                     dispose();
-                    game.setScreen(new GameOverScreen(game, score, max_score));
+                    game.setScreen(new GameOverScreen(game, score, maxCheese, maxTraps, mouseSpeedFactor));
                 });
             }
         }
@@ -258,7 +260,7 @@ public class GameScreen implements Screen {
             cheeseDrawing.draw(game.batch, cheese);
             game.batch.end();
 
-            scoreLabel.setText("Score " + score + "/" + max_score);
+            scoreLabel.setText("Score " + score + "/" + maxCheese);
             timeLabel.setText("Time: " + new DecimalFormat("#0.0").format(secondsSinceStart));
             hud.act();
             hud.draw();

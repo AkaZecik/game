@@ -26,7 +26,7 @@ public class WinScreen implements Screen {
     private final Music catScream;
     private final Sound partyBlower;
 
-    WinScreen(final TheGame game) {
+    WinScreen(final TheGame game, int maxCheese, int maxTraps, float mouseSpeedFactor) {
         this.game = game;
         stage = new Stage(new ScreenViewport(), game.batch);
         Gdx.input.setInputProcessor(stage);
@@ -64,7 +64,7 @@ public class WinScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dispose();
-                game.setScreen(new GameScreen(game));
+                game.setScreen(new GameScreen(game, maxCheese, maxTraps, mouseSpeedFactor));
             }
         });
 
