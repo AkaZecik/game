@@ -33,7 +33,6 @@ public class MainMenuScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         backgroundTexture = game.getAssetManager().get("tom_and_jerry1.jpg");
-//        backgroundTexture = new Texture(Gdx.files.internal("tom_and_jerry1.jpg"));
 
         final Table table = new Table().top();
         table.setFillParent(true);
@@ -83,8 +82,6 @@ public class MainMenuScreen implements Screen {
 
         theme = game.getAssetManager().get("tom_and_jerry_theme.mp3");
         menu = game.getAssetManager().get("menu.mp3");
-//        theme = Gdx.audio.newMusic(Gdx.files.internal("tom_and_jerry_theme.mp3"));
-//        menu = Gdx.audio.newMusic(Gdx.files.internal("menu.mp3"));
         menu.setLooping(true);
         theme.setOnCompletionListener(music -> menu.play());
 

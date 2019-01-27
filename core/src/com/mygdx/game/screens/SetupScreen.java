@@ -35,10 +35,8 @@ public class SetupScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         backgroundTexture = game.getAssetManager().get("tom_and_jerry1.jpg");
-//        backgroundTexture = new Texture(Gdx.files.internal("tom_and_jerry1.jpg"));
 
         skin = game.getAssetManager().get("skin/uiskin.json");
-//        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         final Table table1 = new Table().top();
         table1.setFillParent(true);
@@ -141,10 +139,7 @@ public class SetupScreen implements Screen {
         table1.row();
 
         theme = game.getAssetManager().get("tom_and_jerry_theme.mp3");
-//        theme.stop(); // TODO CHECK THAT!!!
-//        theme = Gdx.audio.newMusic(Gdx.files.internal("tom_and_jerry_theme.mp3"));
         menu = game.getAssetManager().get("menu.mp3");
-//        menu = Gdx.audio.newMusic(Gdx.files.internal("menu.mp3"));
     }
 
     @Override
@@ -184,10 +179,6 @@ public class SetupScreen implements Screen {
     public void dispose() {
         fontGenerator.dispose();
         font.dispose();
-//        backgroundTexture.dispose();
-//        theme.dispose();
-//        skin.dispose();
-//        menu.dispose();
         stage.dispose();
     }
 }

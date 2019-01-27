@@ -85,27 +85,24 @@ public class GameScreen implements Screen {
         hud.addActor(widgetGroup);
 
         backgroundTexture = game.getAssetManager().get("floor.jpg");
-//        backgroundTexture = new Texture(Gdx.files.internal("floor.jpg"));
 
         chaseMusic = game.getAssetManager().get("chase.mp3");
-//        chaseMusic = Gdx.audio.newMusic(Gdx.files.internal("chase.mp3"));
         chaseMusic.setLooping(true);
 
         chomp = game.getAssetManager().get("chomp.mp3");
-//        chomp = Gdx.audio.newSound(Gdx.files.internal("chomp.mp3"));
 
         this.maxCheese = maxCheese;
         this.maxTraps = maxTraps;
         this.mouseSpeedFactor = mouseSpeedFactor;
 
-        mouseDrawing = new GameObjectDrawing(75, 75, game.getAssetManager().get("mouse.png")/*Gdx.files.internal("mouse.png")*/);
+        mouseDrawing = new GameObjectDrawing(75, 75, game.getAssetManager().get("mouse.png"));
         mouseDrawing.setRotation(90);
         mouseDrawing.setPosition(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f);
         mouse = new GameObject(viewport.getScreenWidth() / 2f, viewport.getScreenHeight() / 2f, 90, 0f);
 
-        cheeseDrawing = new GameObjectDrawing(75, 75, game.getAssetManager().get("cheese2.png")/*Gdx.files.internal("cheese2.png")*/);
+        cheeseDrawing = new GameObjectDrawing(75, 75, game.getAssetManager().get("cheese2.png"));
 
-        catDrawing = new GameObjectDrawing(116, 40, game.getAssetManager().get("cat.png")/*Gdx.files.internal("cat.png")*/);
+        catDrawing = new GameObjectDrawing(116, 40, game.getAssetManager().get("cat.png"));
         cat = new GameObject(-200, -200, 0, 100f);
 
         do {
@@ -115,7 +112,7 @@ public class GameScreen implements Screen {
         trapDrawing = new GameObjectDrawing(73, 40, game.getAssetManager().get("trap.png")/*Gdx.files.internal("trap.png")*/);
         traps = new Array<>();
 
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < maxTraps / 3; ++i) {
             traps.add(randomTrap());
         }
     }
@@ -164,7 +161,7 @@ public class GameScreen implements Screen {
         float deltaX = cursorX - mouseX;
         float deltaY = cursorY - mouseY;
 
-        if (-1 <= deltaX && deltaX <= 1 && -1 <= deltaY && deltaY <= 1) {
+        if (-5 <= deltaX && deltaX <= 5 && -5 <= deltaY && deltaY <= 5) {
             mouse.speed = 0;
         } else {
             mouse.speed = 200f * mouseSpeedFactor;
@@ -293,10 +290,6 @@ public class GameScreen implements Screen {
     public void dispose() {
         fontGenerator.dispose();
         hudFont.dispose();
-//        chaseMusic.dispose();
-//        mouseDrawing.dispose();
-//        catDrawing.dispose();
-//        trapDrawing.dispose();
     }
 
     private class GameObjectDrawing {
@@ -358,10 +351,6 @@ public class GameScreen implements Screen {
             transform(gameObject);
             sprite.draw(batch);
         }
-
-//        void dispose() {
-//            texture.dispose();
-//        }
 
         void resize(float width, float height) {
             this.width = width;

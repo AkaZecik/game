@@ -35,7 +35,6 @@ public class GameOverScreen implements Screen {
         stage.addActor(table);
 
         backgroundImage = game.getAssetManager().get("tom_and_jerry3.jpg");
-//        backgroundImage = new Texture(Gdx.files.internal("tom_and_jerry3.jpg"));
 
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-Medium.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -84,7 +83,6 @@ public class GameOverScreen implements Screen {
         table.add(menuButton);
 
         gameOverSound = game.getAssetManager().get("game_over.mp3");
-//        gameOverSound = Gdx.audio.newSound(Gdx.files.internal("game_over.mp3"));
     }
 
     @Override
@@ -125,7 +123,6 @@ public class GameOverScreen implements Screen {
     public void dispose() {
         font.dispose();
         fontGenerator.dispose();
-//        gameOverSound.dispose();
         stage.dispose();
     }
 }
