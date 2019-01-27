@@ -5,8 +5,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -20,8 +18,6 @@ public class GameOverScreen implements Screen {
     private final TheGame game;
     private final Texture backgroundImage;
     private final Stage stage;
-    private final FreeTypeFontGenerator fontGenerator;
-    private final BitmapFont font;
     private final Sound gameOverSound;
 
     GameOverScreen(final TheGame game, int score, int maxCheese, int maxTraps, float mouseSpeedFactor) {
@@ -36,17 +32,8 @@ public class GameOverScreen implements Screen {
 
         backgroundImage = game.getAssetManager().get("tom_and_jerry3.jpg");
 
-        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-Medium.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.color = Color.WHITE;
-        parameter.size = 72;
-        parameter.borderColor = Color.BLACK;
-        parameter.borderWidth = 2;
-        font = fontGenerator.generateFont(parameter);
-
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.RED;
+        labelStyle.font = game.getAssetManager().get("font4.ttf");
         Label gameOverLabel = new Label("Game Over!", labelStyle);
         Label scoreLabel = new Label("Your score: " + score + "/" + maxCheese, labelStyle);
 
@@ -56,7 +43,7 @@ public class GameOverScreen implements Screen {
         table.row();
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
+        buttonStyle.font = game.getAssetManager().get("font5.ttf");
         buttonStyle.overFontColor = Color.YELLOW;
         buttonStyle.downFontColor = Color.RED;
         buttonStyle.fontColor = Color.WHITE;
@@ -121,8 +108,6 @@ public class GameOverScreen implements Screen {
 
     @Override
     public void dispose() {
-        font.dispose();
-        fontGenerator.dispose();
         stage.dispose();
     }
 }

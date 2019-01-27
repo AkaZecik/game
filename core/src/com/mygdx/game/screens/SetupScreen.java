@@ -5,8 +5,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -24,9 +22,6 @@ public class SetupScreen implements Screen {
     private final Music theme;
     private final Music menu;
     private final Stage stage;
-    private final BitmapFont font;
-    private final FreeTypeFontGenerator fontGenerator;
-    private final Skin skin;
 
     SetupScreen(final TheGame game) {
         this.game = game;
@@ -36,7 +31,7 @@ public class SetupScreen implements Screen {
 
         backgroundTexture = game.getAssetManager().get("tom_and_jerry1.jpg");
 
-        skin = game.getAssetManager().get("skin/uiskin.json");
+        Skin skin = game.getAssetManager().get("skin/uiskin.json");
 
         final Table table1 = new Table().top();
         table1.setFillParent(true);
@@ -45,20 +40,11 @@ public class SetupScreen implements Screen {
 
         table1.setDebug(true); // TODO remove
 
-        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-Medium.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.color = Color.WHITE;
-        parameter.size = 38;
-        parameter.borderColor = Color.BLACK;
-        parameter.borderWidth = 2;
-        font = fontGenerator.generateFont(parameter);
-
         final Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
+        labelStyle.font = game.getAssetManager().get("font3.ttf");
 
         final TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
+        buttonStyle.font = game.getAssetManager().get("font3.ttf");
         buttonStyle.overFontColor = Color.YELLOW;
         buttonStyle.downFontColor = Color.RED;
         buttonStyle.fontColor = Color.WHITE;
@@ -177,8 +163,6 @@ public class SetupScreen implements Screen {
 
     @Override
     public void dispose() {
-        fontGenerator.dispose();
-        font.dispose();
         stage.dispose();
     }
 }

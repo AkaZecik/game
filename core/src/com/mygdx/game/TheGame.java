@@ -6,6 +6,7 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
@@ -46,27 +47,13 @@ public class TheGame extends Game {
         assetManager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         assetManager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
-        FreetypeFontLoader.FreeTypeFontLoaderParameter parameter = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
-
-        parameter.fontFileName = "fonts/rubik/Rubik-Medium.ttf";
-        parameter.fontParameters.size = 38;
-        assetManager.load("font38m.ttf", BitmapFont.class, parameter);
-
-        parameter.fontFileName = "fonts/rubik/Rubik-Medium.ttf";
-        parameter.fontParameters.size = 72;
-        assetManager.load("font_m72.ttf", BitmapFont.class, parameter);
-
-        parameter.fontFileName = "fonts/rubik/Rubik-MediumItalic.ttf";
-        parameter.fontParameters.size = 24;
-        assetManager.load("font_mi24.ttf", BitmapFont.class, parameter);
-
-        parameter.fontFileName = "font/rubik/Rubik-MediumItalic.ttf";
-        parameter.fontParameters.size = 120;
-        assetManager.load("font_mi120.ttf", BitmapFont.class, parameter);
-
-        parameter.fontFileName = "fonts/rubik/Rubik-Black.ttf";
-        parameter.fontParameters.size = 72;
-        assetManager.load("font72bl.ttf", BitmapFont.class, parameter);
+        loadFont("font1.ttf", "fonts/rubik/Rubik-Black.ttf", 72, 2, Color.BROWN, Color.BLACK);
+        loadFont("font2.ttf", "fonts/rubik/Rubik-Black.ttf", 72, 2, Color.WHITE, Color.BLACK);
+        loadFont("font3.ttf", "fonts/rubik/Rubik-Medium.ttf", 38, 1, Color.WHITE, Color.BLACK);
+        loadFont("font4.ttf", "fonts/rubik/Rubik-Medium.ttf", 72, 2, Color.RED, Color.BLACK);
+        loadFont("font5.ttf", "fonts/rubik/Rubik-Medium.ttf", 72, 2, Color.WHITE, Color.BLACK);
+        loadFont("font6.ttf", "fonts/rubik/Rubik-MediumItalic.ttf", 24, 1, Color.YELLOW, Color.BLACK);
+        loadFont("font7.ttf", "fonts/rubik/Rubik-MediumItalic.ttf", 120, 2, Color.WHITE, Color.BLACK);
 
         assetManager.finishLoading();
 
@@ -79,6 +66,16 @@ public class TheGame extends Game {
 
     public PolygonSpriteBatch getBatch() {
         return batch;
+    }
+
+    private void loadFont(String newFontName, String fontName, int size, int borderWidth, Color textColor, Color borderColor) {
+        FreetypeFontLoader.FreeTypeFontLoaderParameter parameter = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        parameter.fontFileName = fontName;
+        parameter.fontParameters.size = size;
+        parameter.fontParameters.color = textColor;
+        parameter.fontParameters.borderColor = borderColor;
+        parameter.fontParameters.borderWidth = borderWidth;
+        assetManager.load(newFontName, BitmapFont.class, parameter);
     }
 
     @Override

@@ -4,11 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
@@ -30,9 +28,6 @@ public class GameScreen implements Screen {
     private final Stage hud;
     private final Music chaseMusic;
     private final Sound chomp;
-    private final FreeTypeFontGenerator fontGenerator;
-    private final BitmapFont hudFont;
-    private final BitmapFont countDownFont;
     private final Label scoreLabel;
     private final Label timeLabel;
     private final GameObjectDrawing cheeseDrawing;
@@ -57,20 +52,8 @@ public class GameScreen implements Screen {
         this.game.batch.setProjectionMatrix(viewport.getCamera().combined);
         hud.setDebugAll(true);
 
-        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-MediumItalic.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 24;
-        parameter.color = Color.YELLOW;
-        parameter.borderWidth = 1;
-        parameter.borderColor = Color.BLACK;
-        hudFont = fontGenerator.generateFont(parameter);
-        parameter.size = 120;
-        parameter.borderWidth = 2;
-        parameter.color = Color.WHITE;
-        countDownFont = fontGenerator.generateFont(parameter);
-
         Label.LabelStyle style = new Label.LabelStyle();
-        style.font = hudFont;
+        style.font = game.getAssetManager().get("font6.ttf");
         scoreLabel = new Label("", style);
         timeLabel = new Label("", style);
         Container<Label> scoreLabelContainer = new Container<>(scoreLabel).top().right().pad(30);
@@ -243,8 +226,9 @@ public class GameScreen implements Screen {
         mouseDrawing.draw(game.batch, mouse);
 
         if (time < 4) {
-            countDownFont.draw(game.batch, Integer.toString(MathUtils.ceil(4f - time)),
-                    viewport.getScreenWidth() / 2f - 50, viewport.getScreenHeight() / 2f + 60);
+            ((BitmapFont) game.getAssetManager().get("font7.ttf"))
+                    .draw(game.batch, Integer.toString(MathUtils.ceil(4f - time)),
+                            viewport.getScreenWidth() / 2f - 50, viewport.getScreenHeight() / 2f + 60);
             game.batch.end();
         } else {
             secondsSinceStart = time - 4f;
@@ -288,13 +272,10 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        fontGenerator.dispose();
-        hudFont.dispose();
     }
 
     private class GameObjectDrawing {
         private final Polygon polygon;
-        private final Texture texture;
         private final PolygonRegion region;
         private final PolygonSprite sprite;
         private float width;
@@ -307,7 +288,6 @@ public class GameScreen implements Screen {
             polygon = new Polygon(vertices);
             setupPolygon();
 
-            this.texture = texture;
             float textureWidth = texture.getWidth();
             float textureHeight = texture.getHeight();
 

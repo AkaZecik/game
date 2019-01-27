@@ -6,8 +6,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -23,8 +21,6 @@ public class MainMenuScreen implements Screen {
     private final Music theme;
     private final Music menu;
     private final Stage stage;
-    private final BitmapFont font1;
-    private final FreeTypeFontGenerator fontGenerator;
 
     public MainMenuScreen(final TheGame game) {
         this.game = game;
@@ -39,23 +35,14 @@ public class MainMenuScreen implements Screen {
         table.padTop(50);
         stage.addActor(table);
 
-        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/rubik/Rubik-Black.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.color = Color.WHITE;
-        parameter.size = 72;
-        parameter.borderColor = Color.BLACK;
-        parameter.borderWidth = 2;
-        font1 = fontGenerator.generateFont(parameter);
-
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font1;
-        labelStyle.fontColor = Color.BROWN;
+        labelStyle.font = game.getAssetManager().get("font1.ttf");
         Label gameName = new Label("Tom 'n Jerry Game", labelStyle);
         table.add(gameName).colspan(2).spaceBottom(100);
         table.row();
 
         final TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font1;
+        buttonStyle.font = game.getAssetManager().get("font2.ttf");
         buttonStyle.overFontColor = Color.YELLOW;
         buttonStyle.downFontColor = Color.RED;
         buttonStyle.fontColor = Color.WHITE;
@@ -127,11 +114,6 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
-        fontGenerator.dispose();
-        font1.dispose();
-//        backgroundTexture.dispose();
-//        theme.dispose();
-//        menu.dispose();
         stage.dispose();
     }
 }
