@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.game.Score;
 import com.mygdx.game.TheGame;
 
 public class WinScreen implements Screen {
@@ -22,8 +23,10 @@ public class WinScreen implements Screen {
     private final Music catScream;
     private final Sound partyBlower;
 
-    WinScreen(final TheGame game, int maxCheese, int maxTraps, float mouseSpeedFactor) {
+    WinScreen(final TheGame game, int score, int maxCheese, int maxTraps, float mouseSpeedFactor, float time) {
         this.game = game;
+        Score newScore = new Score(score, maxTraps, mouseSpeedFactor, time);
+        game.enterNewScore(newScore);
 
         game.getAssetManager().finishLoadingAsset("jerry.jpg");
         game.getAssetManager().finishLoadingAsset("font4.ttf");

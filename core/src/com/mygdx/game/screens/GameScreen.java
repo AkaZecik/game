@@ -205,7 +205,7 @@ public class GameScreen implements Screen {
             } else {
                 Gdx.app.postRunnable(() -> {
                     dispose();
-                    game.setScreen(new WinScreen(game, maxCheese, maxTraps, mouseSpeedFactor));
+                    game.setScreen(new WinScreen(game, score, maxCheese, maxTraps, mouseSpeedFactor, secondsSinceStart));
                 });
             }
         }

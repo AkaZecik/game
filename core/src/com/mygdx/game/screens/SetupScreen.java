@@ -44,8 +44,6 @@ public class SetupScreen implements Screen {
         table1.padTop(50);
         stage.addActor(table1);
 
-//        table1.setDebug(true); // TODO remove
-
         final Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = game.getAssetManager().get("font3.ttf");
 

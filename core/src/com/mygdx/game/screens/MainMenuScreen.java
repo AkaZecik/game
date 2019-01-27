@@ -44,7 +44,7 @@ public class MainMenuScreen implements Screen {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = game.getAssetManager().get("font1.ttf");
         Label gameName = new Label("Tom 'n Jerry Game", labelStyle);
-        table.add(gameName).colspan(2).spaceBottom(100);
+        table.add(gameName).colspan(3).spaceBottom(100);
         table.row();
 
         final TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
@@ -62,6 +62,16 @@ public class MainMenuScreen implements Screen {
             }
         });
         table.add(playButton).spaceRight(100);
+
+        final TextButton highScoreButton = new TextButton("Highscore", buttonStyle);
+        highScoreButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dispose();
+                game.setScreen(new HighScoreScreen(game));
+            }
+        });
+        table.add(highScoreButton).spaceRight(100);
 
         final TextButton exitButton = new TextButton("Exit", buttonStyle);
         exitButton.addListener(new ClickListener() {
