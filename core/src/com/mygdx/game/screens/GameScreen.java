@@ -177,7 +177,7 @@ public class GameScreen implements Screen {
             }
         }
 
-        if (secondsSinceStart / 5 > traps.size) {
+        if (traps.size <= max_traps && secondsSinceStart / 5 > traps.size) {
             traps.add(randomTrap());
         }
 
