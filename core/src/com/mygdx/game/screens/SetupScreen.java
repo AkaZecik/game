@@ -26,6 +26,12 @@ public class SetupScreen implements Screen {
     SetupScreen(final TheGame game) {
         this.game = game;
 
+        game.getAssetManager().finishLoadingAsset("tom_and_jerry1.jpg");
+        game.getAssetManager().finishLoadingAsset("skin/uiskin.json");
+        game.getAssetManager().finishLoadingAsset("font3.ttf");
+        game.getAssetManager().finishLoadingAsset("tom_and_jerry_theme.mp3");
+        game.getAssetManager().finishLoadingAsset("menu.mp3");
+
         stage = new Stage(new ScreenViewport(), game.getBatch());
         Gdx.input.setInputProcessor(stage);
 
@@ -38,13 +44,13 @@ public class SetupScreen implements Screen {
         table1.padTop(50);
         stage.addActor(table1);
 
-        table1.setDebug(true); // TODO remove
+//        table1.setDebug(true); // TODO remove
 
         final Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = game.getAssetManager().get("font3.ttf");
 
         final TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = game.getAssetManager().get("font3.ttf");
+        buttonStyle.font = game.getAssetManager().get("font2.ttf");
         buttonStyle.overFontColor = Color.YELLOW;
         buttonStyle.downFontColor = Color.RED;
         buttonStyle.fontColor = Color.WHITE;

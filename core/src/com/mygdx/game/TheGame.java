@@ -49,13 +49,13 @@ public class TheGame extends Game {
 
         loadFont("font1.ttf", "fonts/rubik/Rubik-Black.ttf", 72, 2, Color.BROWN, Color.BLACK);
         loadFont("font2.ttf", "fonts/rubik/Rubik-Black.ttf", 72, 2, Color.WHITE, Color.BLACK);
-        loadFont("font3.ttf", "fonts/rubik/Rubik-Medium.ttf", 38, 1, Color.WHITE, Color.BLACK);
+        loadFont("font3.ttf", "fonts/rubik/Rubik-Medium.ttf", 38, 2, Color.WHITE, Color.BLACK);
         loadFont("font4.ttf", "fonts/rubik/Rubik-Medium.ttf", 72, 2, Color.RED, Color.BLACK);
         loadFont("font5.ttf", "fonts/rubik/Rubik-Medium.ttf", 72, 2, Color.WHITE, Color.BLACK);
         loadFont("font6.ttf", "fonts/rubik/Rubik-MediumItalic.ttf", 24, 1, Color.YELLOW, Color.BLACK);
         loadFont("font7.ttf", "fonts/rubik/Rubik-MediumItalic.ttf", 120, 2, Color.WHITE, Color.BLACK);
 
-        assetManager.finishLoading();
+//        assetManager.finishLoading();
 
         this.setScreen(new MainMenuScreen(this));
     }

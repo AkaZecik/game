@@ -22,6 +22,12 @@ public class GameOverScreen implements Screen {
 
     GameOverScreen(final TheGame game, int score, int maxCheese, int maxTraps, float mouseSpeedFactor) {
         this.game = game;
+
+        game.getAssetManager().finishLoadingAsset("tom_and_jerry3.jpg");
+        game.getAssetManager().finishLoadingAsset("font4.ttf");
+        game.getAssetManager().finishLoadingAsset("font5.ttf");
+        game.getAssetManager().finishLoadingAsset("game_over.mp3");
+
         stage = new Stage(new ScreenViewport(), game.getBatch());
         Gdx.input.setInputProcessor(stage);
 

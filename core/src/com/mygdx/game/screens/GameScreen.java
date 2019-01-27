@@ -48,6 +48,17 @@ public class GameScreen implements Screen {
 
     GameScreen(final TheGame game, int maxCheese, int maxTraps, float mouseSpeedFactor) {
         this.game = game;
+
+        game.getAssetManager().finishLoadingAsset("font6.ttf");
+        game.getAssetManager().finishLoadingAsset("font7.ttf");
+        game.getAssetManager().finishLoadingAsset("floor.jpg");
+        game.getAssetManager().finishLoadingAsset("chase.mp3");
+        game.getAssetManager().finishLoadingAsset("chomp.mp3");
+        game.getAssetManager().finishLoadingAsset("mouse.png");
+        game.getAssetManager().finishLoadingAsset("cheese2.png");
+        game.getAssetManager().finishLoadingAsset("cat.png");
+        game.getAssetManager().finishLoadingAsset("trap.png");
+
         viewport = new ScreenViewport();
         hud = new Stage(viewport, this.game.getBatch());
         this.game.getBatch().setProjectionMatrix(viewport.getCamera().combined);
@@ -93,7 +104,7 @@ public class GameScreen implements Screen {
             spawnCheese();
         } while (mouseDrawing.overlap(cheeseDrawing));
 
-        trapDrawing = new GameObjectDrawing(73, 40, game.getAssetManager().get("trap.png")/*Gdx.files.internal("trap.png")*/);
+        trapDrawing = new GameObjectDrawing(73, 40, game.getAssetManager().get("trap.png"));
         traps = new Array<>();
 
         for (int i = 0; i < maxTraps / 3; ++i) {

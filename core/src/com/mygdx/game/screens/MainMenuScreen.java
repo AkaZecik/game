@@ -25,6 +25,12 @@ public class MainMenuScreen implements Screen {
     public MainMenuScreen(final TheGame game) {
         this.game = game;
 
+        game.getAssetManager().finishLoadingAsset("tom_and_jerry1.jpg");
+        game.getAssetManager().finishLoadingAsset("font1.ttf");
+        game.getAssetManager().finishLoadingAsset("font2.ttf");
+        game.getAssetManager().finishLoadingAsset("tom_and_jerry_theme.mp3");
+        game.getAssetManager().finishLoadingAsset("menu.mp3");
+
         stage = new Stage(new ScreenViewport(), game.getBatch());
         Gdx.input.setInputProcessor(stage);
 

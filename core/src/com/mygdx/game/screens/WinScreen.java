@@ -24,6 +24,13 @@ public class WinScreen implements Screen {
 
     WinScreen(final TheGame game, int maxCheese, int maxTraps, float mouseSpeedFactor) {
         this.game = game;
+
+        game.getAssetManager().finishLoadingAsset("jerry.jpg");
+        game.getAssetManager().finishLoadingAsset("font4.ttf");
+        game.getAssetManager().finishLoadingAsset("font5.ttf");
+        game.getAssetManager().finishLoadingAsset("cat_scream.wav");
+        game.getAssetManager().finishLoadingAsset("blower.mp3");
+
         stage = new Stage(new ScreenViewport(), game.getBatch());
         Gdx.input.setInputProcessor(stage);
 
